@@ -1,0 +1,514 @@
+       Worst-Case Solution Quality Analysis When Not Re-Expanding Nodes in
+                                 Best-First Search
+
+           Richard Valenzano                           Nathan R. Sturtevant                      Jonathan Schaeffer
+            University of Alberta                         University of Denver                    University of Alberta
+            valenzan@ualberta.ca                          sturtevant@cs.du.edu                    jonathan@ualberta.ca
+
+
+
+                           Abstract                                       Yet there is still much that is not fully understood about
+                                             ∗
+                                                                       the impact that not re-expanding nodes has on a search. For
+  The use of inconsistent heuristics with A can result in in-          example, when this technique has been tested empirically
+  creased runtime due to the need to re-expand nodes. Poor per-
+  formance can also be seen with Weighted A∗ if nodes are re-
+                                                                       it has been shown to improve algorithm runtime in some
+  expanded. While the negative impact of re-expansions can of-         problems while harming it in others, and it also typically de-
+  ten be minimized by setting these algorithms to never expand         creases the quality of the solutions found (Thayer and Ruml
+  nodes more than once, the result can be a lower solution qual-       2008; Ebendt and Drechsler 2009). However, there are still
+  ity. In this paper, we formally show that the loss in solution       no theoretical results that identify the properties of a state-
+  quality can be bounded based on the amount of inconsistency          space that determine whether or not re-expanding nodes is
+  along optimal solution paths. This bound holds regardless of         beneficial, and the only known guaranteed bounds on the
+  whether the heuristic is admissible or inadmissible, though          quality of solutions found when using this technique are
+  if the heuristic is admissible the bound can be used to show         when weighting a consistent heuristic in WA∗ and A∗ .
+  that not re-expanding nodes can have at most a quadratic im-            The goal of this paper is to begin to address this gap in
+  pact on the quality of solutions found when using A∗ . We
+  then show that the bound is tight by describing a process for
+                                                                       our understanding of this commonly used technique. Our
+  the construction of graphs for which a best-first search that        specific focus will be on formally analyzing how not re-
+  does not re-expand nodes will find solutions whose quality is        expanding nodes can impact the solution quality. In particu-
+  arbitrarily close to that given by the bound. Finally, we will       lar, we will show that the loss in quality that can result from
+  use the bound to extend a known result regarding the solution        not re-expanding nodes can be bound based on the amount
+  quality of WA∗ when weighting a consistent heuristic, so that        of inconsistency along optimal solution paths. This will be
+  it also applies to other types of heuristic weighting.               proven for a large class of best-first search algorithms and
+                                                                       will apply regardless of whether the heuristic is admissible
+                                                                       or inadmissible. The bound will then be used to show that
+                     1    Introduction                                 for admissible heuristics, the worst-case when using an A∗
+            ∗
+When an A search is using an admissible heuristic, any so-             which does not re-expand nodes is to find solutions that are
+lutions it finds are guaranteed to be optimal (Hart, Nilsson,          quadratic in the optimal solution cost. We will then identify
+and Raphael 1968). If the heuristic is also consistent, then           a family of worst-case graphs and corresponding heuristics
+a node will only be expanded when the lowest cost path                 for which the given bound is exact. Finally, we will con-
+to it has been found. This cannot be guaranteed when the               sider the known bound on solution quality that is specific to
+heuristic is inconsistent, in which case A∗ may expand the             the use of a consistent heuristic with WA∗ , and extend this
+same node multiple times. In some domains, these node re-              bound so that it applies to other types of heuristic weighting.
+expansions can dominate runtime and thereby greatly de-
+crease algorithm performance (Martelli 1977).                          2    Not Re-Expanding Nodes Can Be Helpful
+   Re-expansions can also occur when using Weighted A∗                 To motivate the need to study the relationship between not
+(WA∗ ) (Pohl 1970). This algorithm performs an A∗ search               re-expanding nodes and solution quality, we consider two
+using the inadmissible and inconsistent heuristic of H =               examples in this section in which algorithm runtime suffers
+w · h, where h is an admissible heuristic and w ≥ 1 is a               greatly when this technique is not used. The first is a well-
+constant. To avoid the negative impact of re-expansions, it is         known family of graphs Gk (V, E) that were identified by
+common to modify WA∗ so that it never expands any node                 Martelli (1977), where Gk has k vertices for any k ≥ 4, each
+more than once. For example, this technique has been ap-               with a corresponding admissible but inconsistent heuristic.
+plied in domains such as robot path planning (Likhachev,               We omit a full description of Gk due to space constraints.
+Gordon, and Thrun 2003) and binary decision diagram min-               Martelli showed that if an A∗ search which re-expands nodes
+imization (Ebendt and Drechsler 2009).                                 is used on a problem that has Gk as a subgraph, then the
+Copyright c 2014, Association for the Advancement of Artificial        search will require O(2|V | ) expansions to explore that region
+Intelligence (www.aaai.org). All rights reserved.                      of the search space. Martelli introduced a modification to A∗
+                Ratio of    Re-Expansion     NR Ratio of         18 2 14 1            11 9       9 2       9 4       2 1        0
+                                                                     (2)    (2)                     (0)       (3)       (1)
+    Weight    Total Nodes    Percentage      Total Nodes          n0     n1            n 2 (0)   n3        n4        n5         n6
+      1.0          1.0           0%             1.0
+                                                                 Figure 1: Example path with INC H values shown below the
+      1.5         0.86           16%            0.74
+       2          1.52           65%            0.56             edge costs in parentheses.
+       5          3.17           90%            0.33
+      10          3.28           91%            0.30             Paths and path costs. A path is a sequence of nodes P =
+                                                                 n0 , ..., nk in a given problem such that (ni , ni+1 ) ∈ E for all
+   Table 1: The impact of re-expanding nodes on WA∗ .            0 ≤ i < k. The cost of a path is given by the sum of the costs
+                                                                 of the edges along the path. P will be called a solution path
+which only requires O(|V |2 ) expansions to traverse through     to a task if n0 = nstart and nk ∈ Vgoals , and an optimal
+such subgraphs while still ensuring that all solutions found     solution path if it has the lowest cost of all solution paths.
+will still be optimal. However, by simply not re-expanding       C ∗ will denote the cost of all optimal solution paths. We also
+nodes we guarantee that at most |V | expansions are needed,      use g ∗ (n) to denote the cost of the optimal path from nstart
+though with a loss of guaranteed optimality.                     to n, h∗ (n) as the cost of the lowest cost path from n to any
+   As an example in which it is essential to not perform re-     node in Vgoals (where h∗ (n) = ∞ if no such path exists),
+expansions when using an inadmissible heuristic, consider        and g ∗ (n, m) to denote the cost of the optimal path from n
+the use of WA∗ on the 35, 360 pathfinding problems from          to m. This means that C ∗ = g ∗ (ng ) = g ∗ (nstart , ng ) where
+the 10 8-connected, 512 × 512 maps with 40% random ob-           ng is the goal node with the lowest cost path to it.
+stacles given by Sturtevant (2012). The average optimal so-      Heuristics and heuristic properties. We define a heuris-
+lution cost of these problems is 733.87, and A∗ performs         tic function H : V → R≥0 as any function from V to the
+an average of 36, 003 expansions per problem when using          non-negative real numbers. The only restrictions we place on
+the octile heuristic. When it is not weighted, this heuris-      H are that for any n, H(n) ≥ 0, H(n) = 0 if n ∈ Vgoals ,
+tic is consistent. Table 1 shows the average performance of      and H(n) 6= ∞ if h∗ (n) 6= ∞. These assumptions cor-
+WA∗ on these problems for a variety of weights. The first        respond to requiring that H never returns a negative value,
+column shows the weight, the second column shows the to-         always returns 0 for goal nodes, and does not incorrectly
+tal number of expansions relative to A∗ , and the third col-     identify any node from which a goal node is reachable as a
+umn shows what percentage of the total expansions were           dead-end, respectively.
+re-expansions. The table shows that the higher weights ac-          A heuristic H is admissible if for any node n, H(n) ≤
+tually expand more nodes than A∗ , largely because of re-        h∗ (n). Unless otherwise stated, we do not assume admis-
+expansions. For example, 91% of the expansions made by           sibility, which is why we use H to refer to heuristics in-
+the weight 10 search are re-expansions, which is why it is       stead of h which has most often been used in the literature
+much slower than A∗ despite expanding only 30% as many           to denote an admissible heuristic. H is said to be consis-
+unique nodes. The final column of the table shows the total      tent if for any edge (p, c) ∈ E, H(p) ≤ H(c) + κ(p, c),
+number of node expansions relative to A∗ when WA∗ does           and inconsistent if there exists an edge (p, c) ∈ E such that
+not re-expand nodes. As shown, all weights greater than one      H(p) > H(c) + κ(p, c). We define the inconsistency of a
+now result in a substantially faster search than A∗ . Clearly,   heuristic H on an edge from p to c as how far away the
+not performing re-expansions is necessary in this domain.        heuristic H is from being consistent on the edge from p to c.
+   Since the above examples suggest that not re-expanding        This value, denoted by INC H (p, c), is given by
+nodes can lead to significant runtime improvements, we now
+turn to formally analyzing the impact of this technique on             INC H (p, c) = max(H(p) − H(c) − κ(p, c), 0)
+solution quality. We will later compare the actual impact on     Notice INC H (p, c) > 0 if and only if H is inconsistent on
+solution quality of not re-expanding nodes in these problems     edge (p, c), and 0 otherwise. As such, the standard definition
+to what the formal analysis predicts in Section 4.4.             of consistency is equivalent to requiring that INC H (p, c) =
+                                                                 0 for any (p, c) ∈ E. We also define the inconsistency of
+                 3    Formal Notation                            a heuristic H along a path P of nodes as the sum of the
+                                                                 inconsistency of H on each of the edges along P .
+In this section, we will define the notation that will be used      As an example of how these metrics are calculated, con-
+throughout the paper.                                            sider the path n0 , ..., n6 given in Figure 1. In this figure, the
+                                                                 heuristic values are shown inside the nodes, the edge costs
+Problem definition. The tasks we consider consist of find-       are shown above the edges, and the value of the inconsis-
+ing a path (defined below) in a graph G = (V, E) from a          tency of H on each edge is shown in parentheses below
+given start node or vertex nstart ∈ V to one of a set of         the edges. For example, H is inconsistent on edge (n4 , n5 ),
+goal nodes Vgoals ⊆ V . If (n, m) ∈ E (ie. there is an edge      which is why INC H (n4 , n5 ) = 9 − 2 − 4 = 3, while the
+from n to m), m is called a successor or child of n. κ(n, m)     value of INC H (n2 , n3 ) and INC H (n3 , n4 ) are both 0 since
+will denote the cost of this edge, and we assume that for any    H is consistent on these edges.
+(n, m) ∈ E, κ(n, m) ≥ 0. All edges will also be assumed             The inconsistency of H along the path in Figure 1 is then
+to be directed edges. Note that we will often omit references    given by the sum of the numbers in the parentheses. In this
+to G when the graph in question is clear from the context.       case, the result is 8. The path in Figure 1 also demonstrates
+Algorithm 1 Best-First Search                                          The algorithms in this framework differ in the evaluation
+ 1: g(nstart ) = 0, parent(nstart ) = NONE                          function used to order nodes. In this paper, we only consider
+ 2: OPEN ← {nstart }, CLOSED ← {}                                   evaluation functions of the form g(n) + H(n) where H is
+ 3: while OPEN is not empty do                                      some heuristic function (see line 4 in Algorithm 1). This re-
+ 4:   n ← arg minn0 ∈OPEN g(n0 ) + H(n0 )                           striction still allows for the framework to include A∗ (which
+ 5:   if n is a goal node then                                      corresponds to the use of an admissible H), WA∗ (which
+ 6:      return solution path extracted from CLOSED                 corresponds to H = w·h where h is admissible), and the use
+ 7:   for all child nc of n do                                      of many other evaluation functions. However, this frame-
+ 8:      if nc ∈ OPEN then
+ 9:          if g(n) + κ(n, nc ) < g(nc ) then
+                                                                    work does not include Greedy Best-First Search since that
+10:              g(nc ) = g(n) + κ(n, nc ), parent(nc ) ← n         algorithm does not include g in its evaluation function.
+11:       else if nc ∈ CLOSED then                                  NR-BFS. We use NR-BFS to refer to a BFS which does
+12:          if g(n) + κ(n, nc ) < g(nc ) then                      not re-expand nodes. NR-BFS is identical to BFS except in
+13:              g(nc ) = g(n) + κ(n, nc ), parent(nc ) ← n         lines 12 to 15 of Algorithm 1. These lines are responsible for
+14:              CLOSED← CLOSED−{nc }
+15:              OPEN← OPEN ∪{nc }
+                                                                    moving a node from CLOSED to OPEN when a lower cost
+16:       else                                                      path has been found to it. By simply removing these lines
+17:          g(nc ) = g(n) + κ(n, nc ), parent(nc ) ← n             and leaving this branch of the conditional empty, the result
+18:          OPEN ← OPEN ∪{nc }                                     is a search that can never re-expand a node. Alternatively, we
+19:    CLOSED ← CLOSED ∪{n}                                         can leave the updates made in line 13, while removing only
+20: return no solution exists                                       lines 14 and 15 which are responsible for actually making a
+                                                                    node a candidate for expansion by moving it back to OPEN.
+                                                                    This approach allows for the path to a node in CLOSED to
+the importance of the max function for ensuring that INC H          be improved without allowing that node to be re-expanded.
+is non-negative. If INC H (p, c) were calculated as H(p) −          We will refer to this technique as parent pointer updating.
+H(c) − κ(p, c) without taking the maximum with 0, the sum           Note that the theorems and proofs below will all apply re-
+along this path would be −1, and this value does not capture        gardless of whether this technique is used or not.
+that there is inconsistency along this path.                        g-cost error. In the remainder of this paper, it will be con-
+   INC H is also related to an existing metric for measur-          venient to let gtδ (n) = gt (n) − g ∗ (n), which we refer to
+ing heuristic inconsistency called the inconsistency rate of        as the g-cost error of node n after t node expansions. No-
+an edge (IRE ) (Felner et al. 2005; Zahavi et al. 2007). This       tice that like g(n), gtδ (n) can never increase as the search
+metric, which is calculated as |H(p) − H(c)|, was intended          progresses. This is because g(n) is only updated if it will de-
+for graphs with only unit-cost, undirected edges. The di-           crease. Formally, this means that if n is first generated by the
+rected version of IRE would be H(p)−H(c), though this is            t-th node expansion then for any t0 and t00 where t ≤ t0 ≤ t00 ,
+still only suitable for unit-cost edges. To see this, notice that   gt0 (n) ≥ gt00 (n) and gtδ0 (n) ≥ gtδ00 (n).
+the IRE of edges (n2 , n3 ) and (n5 , n6 ) in Figure 1 are both
+2, even though H is consistent on (n2 , n3 ) and inconsistent          4    Worst-Case Solution Quality Analysis
+on (n5 , n6 ). Since IRE can be negative, we also cannot use
+the sum of the IRE values along a path P as a measure of            Having established the needed notation, we now show that
+the inconsistency along P for the same reason that INC H is         for any problem, the inconsistency of H along any optimal
+forced to be non-negative. As such, INC H was found to be           path is an upper bound on the suboptimality of any solution
+a more convenient metric than IRE for this paper.                   found by NR-BFS. To show this bound, we first require the
+                                                                    following lemma and a resulting observation.
+Best-First Search (BFS). Best-first search is a well-               Lemma 4.1. Let Popt be an optimal solution path to a given
+known algorithm framework that includes A∗ and WA∗ .                problem. At any time prior to the expansion of a goal node by
+Pseudocode for this framework is shown in Algorithm 1               NR-BFS, there will be a node from Popt which is in OPEN.
+though we assume the reader’s familiarity with the concepts            The proof of this lemma has been omitted as it is almost
+of OPEN and CLOSED lists, and parent pointers as typi-              identical to the proof given for Lemma 1 of Hart, Nilsson,
+cally used in such algorithms.                                      and Raphael (1968) which is specific to A∗ .
+   BFS algorithms maintain a g-cost for each node n, de-               We can now use this lemma to show how the evaluation
+noted g(n). In an A∗ search which uses a consistent heuris-         of a node from Popt that is in OPEN can be related to C ∗ .
+tic, g(n) is the cost of the path from nstart to n stored           To do so, suppose that the t + 1-st node expanded by NR-
+implicitly using parent pointers. In other BFS algorithms,          BFS is a goal node ng ∈ Vgoals , and let n be the node from
+g(n) can only be said to be an upper bound on the cost of           Popt that is guaranteed to be in OPEN after t expansions
+this path. This is because an earlier portion of the path to n      according to Lemma 4.1. Consider the following derivation
+may be improved through re-expansions and this improve-             of the evaluation of n:
+ment will not be immediately propagated to g(n), thus lead-
+ing to g-cost inaccuracy. Since the value of g(n) can change,       gt (n) + H(n) = g ∗ (n) + gtδ (n) + H(n)
+we use gt (n) when we need to refer to the g-cost of n after t                      = g ∗ (n) + gtδ (n) + h∗ (n) − h∗ (n) + H(n)
+expansions. Using this notation, if the g-cost of some n is not
+updated during the t + 1-st iteration, then gt+1 (n) = gt (n).                      = C ∗ + gtδ (n) + (H(n) − h∗ (n))           (1)
+This shows that the evaluation of n differs from C ∗ by no          Theorem 4.4. If P = n0 , n1 , ..., nk is a path from n0 to
+more than the sum of the g-cost error and (H(n) − h∗ (n))           some nk ∈ Vgoals such that h∗ (n0 ) = g ∗ (n0 , nk ), then
+which, if positive, is how inadmissible H is on n. Since ng                                             k−1
+was selected for the t + 1-st node expansion instead of n,                                              X
+                                                                              H(n0 ) − h∗ (n0 ) ≤             INC H (ni , ni+1 )
+gt (ng ) + H(ng ) ≤ gt (n) + H(n) by the definition of NR-
+                                                                                                        i=0
+BFS. Where C is the cost of the solution found by NR-BFS,
+this inequality can be simplified to C ≤ gt (n) + H(n) since           This follows from Lemma 4.3 since nk ∈ Vgoals implies
+ng ∈ Vgoals implies that H(ng ) = 0 and since C ≤ g(ng )            that H(nk ) = 0, and since g ∗ (n0 , nk ) = h∗ (n0 ).
+(as explained when discussing g-cost above). Substituting
+this into equation 1 allows for the following:                      4.2   Bounding g-cost Error with Inconsistency
+Observation 4.2. If the t + 1-st node expanded by NR-BFS            In this section, we will show that the g-cost error of any node
+is a goal node ng , then there is a node n from some optimal        n from an optimal solution path Popt can be bound by the in-
+path which is in OPEN after t expansions such that the cost         consistency from nstart to n along Popt , at any time after n
+of the solution found to ng will be no more than                    is put in CLOSED. For this theorem, we will first need the
+                                                                    following definition. Where Popt = n0 , ..., nk , a node ni
+               C ∗ + gtδ (n) + H(n) − h∗ (n)                        will be said to be the shallowest node from Popt that is in
+                                                                    OPEN after t expansions if all predecessors of ni from Popt
+   Below we will show that gtδ (n) + H(n) − h∗ (n) is bound         are not in OPEN after t expansions. Formally, this means
+by the inconsistency of H along the optimal path that n is          that for any j where 0 ≤ j < i, nj is not in OPEN. If t > 1,
+on. To do so, we will first show in Section 4.1 that the inad-      then we can also guarantee that the parent of ni on Popt will
+missibility of H on any ni which is on an optimal solution          be in CLOSED. This is because for ni to be the shallowest
+path Popt = n0 , ..., nk is bound by the inconsistency of H         node from Popt in OPEN after t expansions, all the prede-
+along the portion of Popt from ni to nk . We will then show         cessors of ni must be in CLOSED. To see this, notice that
+in Section 4.3 that there is at least one node ni from Popt         n0 will be in CLOSED for any t > 1 since n0 is the first
+which is in OPEN after t expansions such that the g-cost er-        node expanded. Since n1 must have been generated by this
+ror of ni is no larger than the inconsistency of H along the        expansion, n1 must either be in OPEN or CLOSED after t
+portion of Popt from n1 to ni . These two results will then be      expansions. If n1 is in OPEN, then n1 = ni since ni is the
+used to derive the main theorem given in Section 4.3.               shallowest node from Popt in OPEN. If n1 is in CLOSED,
+                                                                    then n2 was generated when n1 was previously expanded.
+4.1    Bounding Inadmissibility with Inconsistency                  As such, n2 is either in OPEN (in which case ni = n2 ) or
+In this section, we will show that the inadmissibility of the       n2 is in CLOSED. By this inductive argument, it is easy to
+heuristic value of a node n on any optimal path Popt is             see that for any j where 0 ≤ j < i, nj is in CLOSED. There-
+bounded by the inconsistency along Popt from n on. We be-           fore, the parent of the shallowest node from Popt which is in
+gin by showing the following more general statement:                OPEN after t node expansions must be in CLOSED.
+                                                                       We now use this property to prove the following theorem:
+Lemma 4.3. If P = n0 , n1 , ..., nk is an optimal path from
+                                                                    Theorem 4.5. Let Popt = n0 , n1 , ..., nk be an optimal solu-
+n0 to nk and H(ni ) 6= ∞ for all 0 ≤ i ≤ k, then
+                                                                    tion path. If ni is a node from Popt that is in CLOSED after
+                                       k−1
+                                       X                            t ≥ 0 node expansions of NR-BFS, then
+  H(n0 ) − H(nk ) − g ∗ (n0 , nk ) ≤         INC H (ni , ni+1 )                                  i−1
+                                                                                                 X
+                                       i=0                                         gtδ (ni ) ≤         INC H (nj , nj+1 )
+Proof. Notice that INC H (p, c) ≥ H(p) − H(c) − κ(p, c)                                          j=1
+
+by the definition of INC H . As such, the following is true:        Proof. The proof is by induction on the number of node ex-
+k−1                                     k−1
+                                                                    pansions, denoted by t. If t = 0, the statement is vacuously
+X                                       X                           true since CLOSED is empty. If t = 1, only n0 = nstart is
+      H(ni )−H(ni+1 )−κ(ni , ni+1 ) ≤          INC H (ni , ni+1 )
+                                                                    in CLOSED and g(n0 ) = g ∗ (n0 ) = 0. Since this means that
+i=0                                      i=0
+                                                                    g1δ (n0 ) = 0, the statement is also true for this base case.
+In the left side of this inequality, −H(ni+1 ) appears in the           Suppose the statement is true after all of the first t ≥ 1
+i-th term of the sum while H(ni+1 ) appears in the i + 1-           node expansions. This means that any n from Popt which is
+st term. As such, when evaluating the sum, all such terms           in CLOSED after t node expansions must satisfy the bound
+will cancel out except for H(n0 ) and −H(nk ). Since P is           above. Since gtδ00 (n) ≤ gtδ0 (n) for any t00 ≥ t0 , the statement
+an optimal path from n0 to nk , the sum of the −κ(ni , ni+1 )       will still apply to any such n after t + 1 node expansions.
+terms will be −g ∗ (n0 , nk ). Therefore, the left side of the          Now consider the node selected to be the t + 1-st ex-
+equation above is equal to H(n0 ) − H(nk ) − g ∗ (n0 , nk ),        pansion, since this is the only node that is newly added to
+and the statement follows.                                          CLOSED on this iteration. If this node is not on Popt , then
+                                                                    the statement is true after t + 1 node expansions. If this node
+   This lemma immediately leads to the following bound on           is on Popt , we denote it as ni for some i > 0. We now con-
+the inadmissibility of the heuristic value of any node from         sider two cases: when the parent of ni , ni−1 , is in CLOSED
+which the goal is reachable:                                        after t node expansions, and when it is not.
+    First suppose that ni−1 is in CLOSED. This requires that                where the final line holds by combining the sums. Therefore
+ni−1 was the t0 -th node expanded where t0 ≤ t. This ex-                    the statement holds for ni after t + 1 expansions in the case
+pansion will have necessarily generated ni and so gt0 (ni ) ≤               that ni−1 is not in CLOSED after t expansions. Having han-
+gt0 (ni−1 )+κ(ni−1 , ni ). As ni−1 is the parent of ni on Popt ,            dled all cases for ni , the statement is true by induction.
+this means that gtδ0 (ni ) ≤ gtδ0 (ni−1 ). If i > 1, the fact that
+gtδ (ni ) ≤ gtδ0 (ni ) allows for the following derivation:                   Notice that the bound given in this theorem does not de-
+                                                                            pend on the inconsistency of the edge from n0 to n1 . As
+                  gtδ (ni ) ≤ gtδ0 (ni−1 )                            (2)   described in the proof, this is because n1 will always have
+                                 i−2
+                                 X                                          an optimal g-cost since n0 is necessarily expanded.
+                             ≤         INC H (nj , nj+1 )             (3)
+                                 j=1                                        4.3    Bounding Solution Quality with Inconsistency
+                                 i−1
+                                 X
+                             ≤         INC H (nj , nj+1 )             (4)   In this section, we will use theorems 4.4 and 4.5 to show
+                                 j=1                                        that the inconsistency of H along any optimal solution path
+Line 3 holds by the induction hypothesis on gtδ0 (ni−1 ), while             (not including the inconsistency of H on the first edge) can
+the final line holds since INC H (ni−1 , ni ) ≥ 0. If i = 1                 be used to bound the quality of any solution found. This is
+(ie. ni = n1 ), then gt (ni ) = g ∗ (n1 ) = κ(n0 , n1 ) and                 formalized by the following theorem:
+gtδ (n1 ) = 0. Therefore, the inequality in line 4 also applies             Theorem 4.6. Where Popt = n0 , n1 , ..., nk is an optimal
+in this case since the right hand side evaluates to 0. As such,             solution path to a given problem, any solution found by NR-
+the statement holds for ni after t+1 node expansions if ni−1                BFS will have a cost C such that:
+is in CLOSED after t expansions. Notice that this argument
+                                                                                                         k−1
+also shows that for any ni from Popt that is in OPEN, if                                                 X
+ni−1 is in CLOSED and its g-cost error is bound by the in-                                 C ≤ C∗ +            INC H (nj , nj+1 )
+consistency of H along Popt from n1 to ni−1 , then gtδ (ni ) is                                          j=1
+
+bound by the inconsistency from n1 to ni . This fact will be                Proof. If k is 0 or 1, NR-BFS will necessarily find the op-
+used later in this proof and when proving Theorem 4.6.                      timal solution and thus will satisfy the statement. If k > 1,
+    Now suppose that ni−1 is not in CLOSED after t expan-                   assume that a goal node ng is first found with the t + 1-st
+sions. Since t ≥ 1 this means that i 6= 1 since n0 will always              expansion for some t ≥ 0. By Lemma 4.1 there will be a
+be in CLOSED. Let ni0 be the shallowest node from Popt                      node from Popt which is in OPEN after t expansions. Let
+which is in OPEN after t node expansions. As the parent of                  ni be the shallowest such node. By Observation 4.2, we can
+ni0 , ni0 −1 , is in CLOSED it must be the case that ni 6= ni0              now perform the following derivation:
+since ni−1 is not in CLOSED. Since ni was selected for ex-
+pansion instead of ni0 , the evaluation of ni must be no larger              C ≤ C ∗ + gtδ (ni ) + H(ni ) − h∗ (ni )                        (10)
+than that of ni0 . This allows for the following:                                          i−1                          k−1
+                                                                                           X                            X
+    gt (ni ) + H(ni ) ≤ gt (ni0 ) + H(ni0 )                 (5)                   ≤ C∗ +         INC H (nj , nj+1 ) +         INC H (nj , nj+1 )
+               gtδ (ni ) ≤ g ∗ (ni0 ) + gtδ (ni0 ) − g ∗ (ni )                             j=1                          j=i
+                                                                                                                                            (11)
+                            + H(ni0 ) − H(ni )                        (6)
+                                                                                           k−1
+                          ≤ gtδ (ni0 )
+                                                                                           X
+                                                                                  ≤ C∗ +         INC H (nj , nj+1 )                         (12)
+                            + H(ni0 ) − H(ni ) − g ∗ (ni0 , ni ) (7)                       j=1
+
+Line 6 is derived by expanding gt (n) to g ∗ (n) + gtδ (n), and             Line 11 is achieved by applying the two earlier theorems as
+rearranging the terms. Line 7 then holds since ni0 is along                 follows. First, since ni is the shallowest node from Popt in
+an optimal path to ni and so g ∗ (ni ) = g ∗ (ni0 ) + g ∗ (ni0 , ni ).      OPEN, ni−1 is in CLOSED and so gtδ (ni−1 ) is bound by
+   Since ni0 −1 is in CLOSED, gtδ (ni0 −1 ) is bound according              the inconsistency of H from n1 to ni−1 by Theorem 4.5.
+to the induction hypothesis. As such, gtδ (ni0 ) is bound by the            As a result, gtδ (ni ) is bound by the inconsistency from n1
+inconsistency of H along Popt from n1 to ni0 by the same                    to ni by the argument used to derive inequality 4. Secondly,
+argument used to derive inequality 4. By substituting this,                 H(ni ) − h∗ (ni ) is replaced by the inconsistency from ni to
+along with the upper bound on H(ni0 )−H(ni )−g ∗ (ni0 , ni )                nk as given by Theorem 4.4. The final line is then achieved
+given by Lemma 4.3, we can continue from line 7 as follows:                 by combining the two summations.
+                0
+               iX −1                           i−1
+                                               X
+ gtδ (ni ) ≤           INC H (nj , nj+1 ) +           INC H (nj , nj+1 )      This theorem shows a formal relationship between the in-
+               j=1                             j=i0                         consistency of the heuristic and solution quality. We now
+                                                                      (8)   consider this bound in the special case that H is admissible.
+               i−1
+               X                                                            Admissible heuristics. If heuristic H is admissible, then
+          ≤            INC H (nj , nj+1 )                             (9)   INC H (ni , ni+1 ) ≤ h∗ (ni ) − κ(ni , ni+1 ) since H(ni ) ≤
+               j=1                                                          h∗ (ni ) and H(ni+1 ) ≥ 0. Where Popt = n0 , ..., nk is an
+optimal solution path, this statement allows for the following                5−ε                                      11 − ε
+derivation on the sum of the inconsistency of H along Popt :                 (2 + ε)                                     (0)
+                                                                   18 2 14 1            11 9          9 2           9 4     2 1       0
+     k−1                          k−1                                    (2)    (2)           (0)          (0)           (3)     (1)
+     X
+         INC H (nj , nj+1 ) ≤ 
+                                  X
+                                      h∗ (ni ) − C ∗     (13)        n0     n1            n2           n3            n4      n5        n6
+      j=1                          j=1                                                        25 − 2ε
+                              ≤ (k − 2) · C   ∗
+                                                             (14)                               (0)
+                     ∗                                                           Figure 2: Example worst-case graph.
+In line 13, the −C term arises from the sum of the edge
+costs along Popt . The final line follows since h∗ (ni ) ≤ C ∗       i ≤ i0 < j, INC H (ni0 , ni0 +1 ) > 0. By being of maximal
+for all nodes on Popt . If for any (m, n) ∈ E, κ(m, n) ≥ c           length, we mean that either i = 1 or INC H (ni−1 , ni ) = 0,
+for some constant c > 0, then k ≤ C ∗ /c since there are at          and either j = k or INC H (nj , nj+1 ) = 0. For each such
+most C ∗ /c edges along Popt . Therefore, by expression 14           subpath, we add an edge from ni−1 to nj that has a cost of
+and Theorem 4.6, the worst-case solution cost when using
+                                                                                                        j−1
+NR-BFS with an admissible heuristic such that all edges cost                                            X
+at least c > 0 is (C ∗ /c − 1) · C ∗ .                                         g ∗ (ni−1 , nj ) −  +           INC H (n0i , ni0 +1 )
+   Since h(ni ) < C ∗ for all i > 0, it is not possible to                                              i0 =i
+construct graphs on which an NR-BFS using an admissible              For example, nodes n4 , n5 , n6 in Figure 2 form a maximally
+heuristic will find solutions that cost exactly (C ∗ /c−1)·C ∗ .     long inconsistent subpath since H is inconsistent on edges
+However, it is still possible to construct graphs in which the       (n4 , n5 ) and (n5 , n6 ), but not on edge (n3 , n4 ). The incon-
+solutions found by NR-BFS will have a cost that is quadratic         sistency along this subpath is 4. Therefore, an edge is added
+in C ∗ . We describe such graphs in the next section.                from n3 (which is the parent of n4 ) to n6 with a cost of
+                                                                     g ∗ (n3 , n6 )−+4. Since g ∗ (n3 , n6 ) = 7, the cost of this edge
+4.4   Tightness of the Worst-Case Bound                              is 11 − . The other maximally long inconsistent subpath of
+In this section, we describe a process for constructing graphs       n1 , n2 is handled similarly, though notice that this subpath
+that demonstrate the tightness of the bound in Theorem 4.6.          does not include n0 since the inconsistency of (n0 , n1 ) can-
+We will then show that this worst-case behaviour is not al-          not impact the quality of solutions found.
+ways happening in practice.                                              When using parent pointer updating, an additional edge is
+                                                                     needed from n0 to nk whose cost is equal to the sum of C ∗
+Worst-case graphs. Given any path P such that the nodes
+                                                                     and the inconsistency of H along Popt from n1 to nk , less
+are assigned any possible heuristic values (admissible or in-
+                                                                     d ·  where d is the number of maximally length inconsistent
+admissible), we can construct a graph in which P is the opti-
+                                                                     subsequences of Popt . For example, d = 2 in Figure 2.
+mal solution path and the cost of the solution found by NR-
+                                                                         The example in Figure 2 also demonstrates why the value
+BFS will be arbitrarily close to the sum of the cost of P
+                                                                     of H(ni ) − H(ni+1 ) − κ(ni , ni+1 ) for edges on which H is
+and the inconsistency along P (not including the inconsis-
+                                                                     consistent do not factor into the bound. To see this, consider
+tency of the heuristic on the first edge). For example, Figure
+                                                                     the edge from n2 to n3 . If the cost of this edge was 10 instead
+2 shows such a graph that has been built around the path
+                                                                     of 9 and the cost of dotted red edge was increased by 1, then
+P = n0 , ..., n6 given previously in Figure 1. To this path,
+                                                                     NR-BFS would find a solution of cost 26 − 2. This solution
+we have added two types of edges, both shown in red. The
+                                                                     is a cost of 6 − 2 larger than C ∗ , just like the solution found
+solid red edges create suboptimal routes around inconsistent
+                                                                     by NR-BFS when κ(n2 , n3 ) = 9. This would also be true
+portions of P . The dashed red edge from n0 to n6 is only
+                                                                     for any κ(n2 , n3 ) ≥ 2 provided that the dotted red edge
+needed when using parent pointer updating, as an NR-BFS
+                                                                     was adjusted accordingly. Intuitively, this shows that NR-
+using this technique will outperform the bound if this edge is
+                                                                     BFS cannot “make up” on g-cost error that has been accrued
+not included. The costs of the new edges include a constant
+                                                                     along optimal paths using an edge from ni to ni+1 for which
+ ≥ 0 whose purpose is to ensure that the worst-case solution
+                                                                     H(ni ) − H(ni+1 ) − κ(ni , ni+1 ) is a negative number.
+is found regardless of how ties are broken between nodes
+with equal values for g + H. If ties are broken in favour of         Worst-case graphs with admissible heuristics. This con-
+the node with higher g-cost (or equivalently with lower H-           struction can also be used to generate graphs that have an ad-
+cost), then  can be set to 0. For other tie breaking policies,      missible heuristic on which NR-BFS will find solutions that
+ can be set as a positive value arbitrarily close to 0. In the      are quadratic in C ∗ . To do so, start with any path n0 , ..., nk
+resulting graph, NR-BFS will find the solution whose cost is         that is to be the optimal solution in the completed graph. For
+arbitrarily close to the bound in Theorem 4.6. For example,          each node ni , set H(ni ) as the cost from ni to nk along P
+the solution found in Figure 2 will cost 25 − 2, while C ∗ is       if i < k and i is odd, and set H(ni ) as 0 otherwise. To this
+19 and the inconsistency of P from n1 to nk is 6.                    path add the edges as defined by the construction above. For
+   To construct such graphs around any given path P =                example, given path P = n0 , ..., n6 such that the edges on
+n0 , ..., nk it is necessary to identify the inconsistent portions   P have a cost of 1, the result of this process is the graph
+of P , not including edge (n0 , n1 ) since any inconsistency in      with an optimal solution cost of 6 shown in Figure 3. In this
+this edge cannot decrease the quality of solutions found. For-       graph, NR-BFS will find the path of cost 12 − 2.
+mally, we consider every maximally long subpath ni , ..., nj            In the more general case, consider using this process on
+of P where 1 ≤ i < j ≤ k such that for all i0 where                  the path n0 , ..., nk such that the edge costs between these
+         6−ε               4−ε                                      than B(C ∗ ). To do so, we require the following definition:
+          (ε)        n2     (0)
+    1         1         1 3 1               1         1             Definition 1. A heuristic H is said to be B-consistent for
+ 6 (0)     5 (4)     0 (0)      (2)      0 (0)     1 (0)      0     bounding function B if for any nodes p and c for which c is
+ n0        n1                n3          n4        n5         n6    a successor of p, H(p) − H(c) ≤ B(h∗ (p)) − B(h∗ (c)).
+                       12 − 2ε                                         If H is B-consistent along Popt = n0 , ..., nk and ∀x ≥
+                          (0)                                       0, y ≥ 0, B(x + y) ≥ B(x) + y, then INC H (p, c) ≤
+Figure 3: Example worst-case graph when H is admissible             B(h∗ (ni )) − B(h∗ (ni+1 )) − κ(ni , ni+1 ) for all 0 ≤ i < k.
+                                                                    The inconsistency along Popt will therefore be no more
+nodes are all 1. The process described above will result in         than the sum of these upper bounds, which is B(h∗ (n0 )) −
+a graph on which NR-BFS will find a solution with a cost            B(h∗ (nk )) − C ∗ by the same argument used to prove Theo-
+that is arbitrarily close to C ∗ · (C ∗ + 2)/4 if k is even, and    rem 4.4. Therefore, any solutions found by NR-BFS using a
+arbitrarily close to (C ∗ + 1)2 /4 if k is odd, where C ∗ = k.      B-consistent heuristic will cost no more than B(h∗ (n0 )) −
+                                                                    B(h∗ (nk )) by Theorem 4.6, which is at most B(C ∗ ) since
+Comparing the bound with practice. In the graphs just               h∗ (n0 ) = C ∗ and B(h∗ (nk )) ≥ 0.
+constructed, g-cost error is accrued by using the added (ie.           This result will allow us to identify a set of bounding func-
+red) edges to bypass inconsistent subpaths on the optimal so-       tions for which solutions found by NR-BFS will cost at most
+lution. If the cost of these edges is not as high as given in the   B(C ∗ ) when using the heuristic H = B(h) where h is con-
+construction, the edges are not exactly where defined, or if        sistent. Specifically, consider the set of functions B such that
+these edges do not appear at all, NR-BFS will find higher           for all x ≥ 0, y ≥ 0, x ≥ 0, it is true that
+quality solutions. This is why NR-BFS can often outper-
+form the bound in practice. For example, consider the case in          x ≥ y ⇒ B(x + z) − B(y + z) ≥ B(x) − B(y)               (15)
+which a weight 10 WA∗ is used on the pathfinding problems           It can be easily shown that if B satisfies this condition, then
+described in Section 2. If WA∗ is set so as to not re-expand        B(h) is B-consistent if h is consistent. If B is twice differ-
+nodes, it finds solutions that are an average of 18% more           entiable, this condition implies that ∀x ≥ 0, B 00 (x) ≥ 0.
+costly than optimal, which is worse than the 12% solution
+suboptimality seen when nodes are re-expanded. However,
+this is substantially better than the upper bound of 475%                               5       Related Work
+suboptimality that is guaranteed by Theorem 4.6, where this         Previous research into bounding solution quality when not
+value has been found by calculating the inconsistency of the        re-expanding nodes has focused on WA∗ when weighting a
+heuristic over the solution paths found by A∗ .                     consistent heuristic, in which case any solutions found will
+   The bound is more accurate in Martelli’s subgraphs in            cost at most w · C ∗ (Likhachev, Gordon, and Thrun 2003).
+which the solutions found by NR-BFS are provably no more            Ebendt and Drechsler (2009) also proved that when using a
+than 1.5 times larger than optimal. In these subgraphs, the         consistent heuristic with A∗ , solutions will be no worse than
+upper bound given by Theorem 4.6 is C + |V | − 2 where C            (1 + )D · C ∗ where the optimal solution has D edges in it.
+is the cost of the solution actually found. Since both C ∗ and         Previous investigations into the impact of inconsistency
+C are O(2|V | ), this deviation from the bound is insignificant.    on algorithm performance have focused on admissible
+   Note that the matter of finding tighter domain-specific          heuristics. This began with the work by Martelli (1977) men-
+bounds is left as future work.                                      tioned above, and includes two other techniques which de-
+                                                                    crease the worst-case runtime of A∗ from being O(2|V | ) to
+4.5   Alternative Heuristic Weighting in NR-BFS                     being O(|V |2 ) while still maintaining optimality (Bagchi
+                                                                    and Mahanti 1983; Mero 1984). Felner et al. (2011) then
+In this section, we will use Theorem 4.6 to find solution
+                                                                    offered a way to improve Mero’s technique in undirected
+quality guarantees for NR-BFS instances that weight a con-
+sistent heuristic in a different way than is done by WA∗ .          graphs and showed that in order for A∗ to expand O(2|V | )
+   For any function B(x) : R≥0 → R≥0 such that ∀x ≥                 nodes, the edge weights must be exponential in |V |.
+0, y ≥ 0, B(x + y) ≥ B(x) + y, any solution found by a
+BFS using a heuristic H(n) = B(h(n)) for some admissible                                    6    Conclusion
+h will be no more than B(C ∗ ) (Valenzano et al. 2013). This        This paper presents a formal analysis of the impact that not
+statement generalizes the well-known result that WA∗ will           re-expanding nodes can have on the quality of solutions re-
+find solutions no more costly than w · C ∗ if the heuristic         turned by a best-first search. In particular, the inconsistency
+being weighted is admissible. This is because WA∗ is a BFS          of a heuristic along an optimal solution path is shown to
+that uses H(n) = B(h(n)) where B(x) = w·x. Note that in             bound the suboptimality of the solutions found when not
+the context of this section, B is called a bounding function.       performing re-expansions. This bound, which is tight, was
+   If the heuristic being weighted in WA∗ is consistent, NR-        then used to demonstrate that not re-expanding nodes in
+BFS is also guaranteed to find solutions that cost at most          an A∗ search that uses an admissible heuristic will have a
+w · C ∗ (Likhachev, Gordon, and Thrun 2003). By using               quadratic effect on solution quality in the worst-case. The
+Theorem 4.6, we can consider other bounding functions for           bound was also used to find suboptimality guarantees for a
+which NR-BFS using H = B(h) where h is consistent will              large class of best-first search algorithms that weight a con-
+also be guaranteed to return solutions with a cost of no more       sistent heuristic in a different way than WA∗ .
+                  Acknowledgments
+We would like to thank the reviewers for their feedback
+on this paper, particularly for the reviewer who noticed
+that there was a simpler proof to the quadratic bound in
+the case that H is admissible. This research was supported
+by GRAND and the Natural Sciences and Engineering Re-
+search Council of Canada (NSERC).
+
+                       References
+Bagchi, A., and Mahanti, A. 1983. Search Algorithms Under
+Different Kinds of Heuristics-A Comparative Study. Jour-
+nal of the ACM 30(1):1–21.
+Ebendt, R., and Drechsler, R. 2009. Weighted A* search
+- unifying view and application. Artificial Intelligence
+173(14):1310–1342.
+Felner, A.; Zahavi, U.; Schaeffer, J.; and Holte, R. C. 2005.
+Dual Lookups in Pattern Databases. In Proceedings of the
+Nineteenth International Joint Conference on Artificial In-
+telligence, 103–108.
+Felner, A.; Zahavi, U.; Holte, R.; Schaeffer, J.; Sturtevant,
+N. R.; and Zhang, Z. 2011. Inconsistent heuristics in theory
+and practice. Artificial Intelligence 175(9-10):1570–1603.
+Hart, P. E.; Nilsson, N. J.; and Raphael, B. 1968. A for-
+mal basis for the heuristic determination of minimum cost
+paths. IEEE Transactions on Systems Science and Cyber-
+netics SSC-4(2):100–107.
+Likhachev, M.; Gordon, G. J.; and Thrun, S. 2003. ARA*:
+Anytime A* with Provable Bounds on Sub-Optimality. In
+Advances in Neural Information Processing Systems 16
+(NIPS-03).
+Martelli, A. 1977. On the Complexity of Admissible Search
+Algorithms. Artificial Intelligence 8(1):1–13.
+Mero, L. 1984. A heuristic search algorithm with modifiable
+estimate. Artificial Intelligence 23(1):13 – 27.
+Pohl, I. 1970. Heuristic search viewed as path finding in a
+graph. Artificial Intelligence 1(3-4):193–204.
+Sturtevant, N. 2012. Benchmarks for Grid-Based Pathfind-
+ing. Transactions on Computational Intelligence and AI in
+Games 4(2):144 – 148.
+Thayer, J. T., and Ruml, W. 2008. Faster than Weighted A*:
+An Optimistic Approach to Bounded Suboptimal Search. In
+Proceedings of the Eighteenth International Conference on
+Automated Planning and Scheduling, 355–362.
+Valenzano, R. A.; Arfaee, S. J.; Thayer, J. T.; Stern, R.; and
+Sturtevant, N. R. 2013. Using Alternative Suboptimality
+Bounds in Heuristic Search. In Proceedings of the Twenty-
+Third International Conference on Automated Planning and
+Scheduling, ICAPS 2013, Rome, Italy, June 10-14, 2013.
+Zahavi, U.; Felner, A.; Schaeffer, J.; and Sturtevant, N. R.
+2007. Inconsistent Heuristics. In Proceedings of the Twenty-
+Second AAAI Conference on Artificial Intelligence, 1211–
+1216.
+

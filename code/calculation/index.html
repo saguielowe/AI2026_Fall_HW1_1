@@ -1,0 +1,766 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>搜索算法计算题</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172033;
+      --muted: #667085;
+      --paper: #ffffff;
+      --canvas: #f4f6fb;
+      --line: #d8deea;
+      --navy: #203864;
+      --blue: #3975d4;
+      --blue-soft: #eaf2ff;
+      --amber: #bc6b13;
+      --amber-soft: #fff4df;
+      --green: #147a55;
+      --green-soft: #e7f8f0;
+      --red: #b42318;
+      --red-soft: #fff0ef;
+      --shadow: 0 14px 36px rgba(33, 49, 80, .08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% -4%, #dfeaff 0, transparent 28rem),
+        radial-gradient(circle at 100% 10%, #fff0d3 0, transparent 24rem),
+        var(--canvas);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.55;
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .shell { width: min(1180px, calc(100% - 32px)); margin: 28px auto 64px; }
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 24px;
+      margin-bottom: 20px;
+    }
+    h1 { margin: 0 0 5px; font-size: clamp(27px, 3vw, 40px); letter-spacing: -.03em; }
+    .subtitle { margin: 0; color: var(--muted); }
+    .source-tag { color: var(--navy); background: var(--blue-soft); padding: 7px 12px; border-radius: 999px; font-weight: 650; }
+    .setup, .section {
+      background: var(--paper);
+      border: 1px solid rgba(216, 222, 234, .9);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+    .setup { padding: 18px 20px; margin-bottom: 22px; }
+    .operation-guide {
+      margin-bottom: 22px; padding: 0; overflow: hidden;
+      background: var(--paper); border: 1px solid rgba(216, 222, 234, .9);
+      border-radius: 18px; box-shadow: var(--shadow);
+    }
+    .operation-guide summary { padding: 15px 20px; cursor: pointer; color: var(--navy); font-weight: 700; }
+    .operation-guide ol { margin: 0; padding: 0 24px 17px 42px; color: var(--muted); font-size: 14px; }
+    .operation-guide li + li { margin-top: 6px; }
+    .setup-row { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; }
+    .result-panel { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--line); }
+    .result-group { min-width: 0; padding: 11px 13px; border: 1px solid var(--line); border-radius: 11px; background: #fbfcff; }
+    .result-group.practice { background: var(--amber-soft); }
+    .result-label { margin-bottom: 3px; color: var(--muted); font-size: 12px; font-weight: 700; }
+    .result-details { margin: 0; padding-left: 20px; color: var(--muted); font-size: 14px; }
+    .result-details:empty { display: none; }
+    .result-panel.passed .result-group.graded { border-color: #9dd8c2; background: var(--green-soft); }
+    .result-panel.passed #status { color: var(--green); font-size: 18px; }
+    label { display: grid; gap: 6px; color: var(--muted); font-size: 14px; }
+    input[type="text"], input[type="number"], select {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 7px 10px;
+      color: var(--ink);
+      background: var(--paper);
+      outline: none;
+    }
+    input:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(57,117,212,.13); }
+    button {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 8px 15px;
+      color: var(--ink);
+      background: var(--paper);
+      font-weight: 650;
+    }
+    button:hover { border-color: #a9b6cd; background: #f9fbff; }
+    button.primary { color: #fff; background: var(--navy); border-color: var(--navy); }
+    button.primary:hover { background: #162b50; }
+    .question { display: none; gap: 22px; }
+    .question.visible { display: grid; }
+    .section { overflow: hidden; }
+    .section-head { display: flex; gap: 14px; align-items: center; padding: 20px 22px 10px; }
+    .part-no {
+      width: 38px; height: 38px; display: grid; place-items: center; flex: 0 0 auto;
+      border-radius: 11px; color: #fff; background: var(--navy); font-weight: 750;
+    }
+    h2 { margin: 0; font-size: 22px; }
+    .section-head p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+    .instructions {
+      margin: 4px 22px 18px;
+      padding: 12px 15px;
+      border-left: 4px solid var(--blue);
+      background: var(--blue-soft);
+      border-radius: 0 10px 10px 0;
+      font-size: 14px;
+    }
+    .workspace { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(310px, .75fr); gap: 20px; padding: 0 22px 24px; }
+    .graph-wrap { min-width: 0; }
+    .graph-title { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; color: var(--muted); font-size: 13px; }
+    .legend { display: flex; flex-wrap: wrap; gap: 10px; }
+    .legend span::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 5px; border-radius: 50%; background: var(--blue); }
+    .legend span:nth-child(2)::before { background: var(--amber); }
+    .graph-canvas {
+      width: 100%; min-height: 380px; position: relative; overflow-x: auto;
+      border: 1px solid var(--line); border-radius: 14px; background: linear-gradient(180deg, #fbfcff, #f6f8fc);
+    }
+    .graph-stage { width: 690px; height: 380px; position: relative; margin: 0 auto; }
+    .graph-stage svg, .tree-stage svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .edge { stroke: #aab5c8; stroke-width: 2; fill: none; }
+    .edge-label { fill: var(--muted); font-size: 13px; font-weight: 650; paint-order: stroke; stroke: #f8faff; stroke-width: 5px; }
+    .a-node {
+      position: absolute; transform: translate(-50%, -50%); width: 88px; min-height: 82px; padding: 7px 5px;
+      display: grid; place-items: center; align-content: center;
+      border: 2px solid var(--navy); border-radius: 50%; background: var(--paper); box-shadow: 0 5px 15px rgba(32,56,100,.12);
+    }
+    .a-node strong { font-size: 19px; line-height: 1; }
+    .a-node small { color: var(--muted); font-size: 10px; line-height: 1.22; text-align: center; }
+    .a-node { cursor: pointer; }
+    .a-node:hover { box-shadow: 0 0 0 4px rgba(57,117,212,.2), 0 5px 15px rgba(32,56,100,.12); }
+    .a-node.frontier-node { background: var(--blue-soft); border-color: #3975d4; }
+    .a-node.expanded-node { color: #fff; background: var(--navy); border-color: var(--navy); }
+    .a-node.expanded-node small { color: rgba(255,255,255,.82); }
+    .a-node.current-node { background: var(--amber); border-color: #9b5d00; box-shadow: 0 0 0 5px rgba(211,128,9,.24); }
+    .a-node.invalid-node { border-color: var(--red); box-shadow: 0 0 0 5px rgba(180,35,24,.18); }
+    .sequence-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+    .sequence-box { width:100%; min-height: 48px; padding: 8px 10px; border: 2px solid #9fb6d9; border-radius: 8px; color: var(--navy); background: var(--blue-soft); font-weight: 650; text-align:left; cursor:pointer; }
+    .sequence-box:hover { border-color:#3975d4; }
+    .sequence-actions { display:flex; gap:6px; }
+    .sequence-actions button { min-height:32px; padding:4px 9px; font-size:12px; }
+    .active-sequence { border: 3px solid #174b98; background:#edf4ff; box-shadow: 0 0 0 5px rgba(57,117,212,.22); }
+    .active-sequence .sequence-box { color:#fff; background:#174b98; border-color:#174b98; }
+    .search-live { padding:10px 12px; border-radius:9px; background:#f6f8fc; border:1px solid var(--line); font-size:13px; line-height:1.6; }
+    .search-live strong { color:var(--navy); }
+    .frontier-record { display:grid; gap:7px; }
+    .frontier-record-row { padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:#f8faff; font-size:13px; }
+    .frontier-record-row.pending { color:var(--muted); }
+    .answers { display: grid; align-content: start; gap: 15px; }
+    .answers h3 { margin: 0; font-size: 16px; }
+    .expansion-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .expansion-table th { text-align: left; color: var(--muted); font-weight: 600; padding: 5px; }
+    .expansion-table td { padding: 5px; }
+    .expansion-table select, .expansion-table input { width: 100%; min-width: 0; min-height: 35px; padding: 4px 7px; }
+    .inline-fields { display: grid; grid-template-columns: 1.45fr .55fr; gap: 10px; }
+    .choice-group { display: grid; gap: 8px; }
+    .choice-line { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .segmented { display: flex; gap: 6px; }
+    .segmented label { display: block; }
+    .segmented input { position: absolute; opacity: 0; pointer-events: none; }
+    .segmented span { display: block; min-width: 48px; text-align: center; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; color: var(--ink); cursor: pointer; }
+    .segmented input:checked + span { color: #fff; background: var(--navy); border-color: var(--navy); }
+    .edge-picker { display: flex; flex-wrap: wrap; gap: 6px; }
+    .edge-chip { min-height: 30px; padding: 4px 9px; border-radius: 999px; font-size: 13px; font-weight: 550; }
+    .edge-chip.selected { color: #fff; border-color: var(--amber); background: var(--amber); }
+    .landscape {
+      width: 760px; height: 380px; position: relative; margin: 0 auto;
+      padding: 32px 24px 48px; display: grid; grid-template-columns: repeat(9, 1fr); align-items: end; gap: 10px;
+    }
+    .land-column { height: 100%; display: flex; flex-direction: column; justify-content: end; align-items: center; gap: 7px; position: relative; }
+    .land-score { color: var(--muted); font-size: 13px; font-weight: 650; }
+    .land-bar { width: 34px; min-height: 8px; border-radius: 8px 8px 3px 3px; background: linear-gradient(180deg, #79a7ed, var(--navy)); opacity: .72; }
+    .land-state { min-width: 42px; min-height: 36px; padding: 5px 9px; position: relative; }
+    .land-state.start::after { content: "起点"; position: absolute; top: 38px; left: 50%; transform: translateX(-50%); color: var(--amber); font-size: 11px; white-space: nowrap; }
+    .land-state.route { color: #fff; background: var(--navy); border-color: var(--navy); }
+    .route-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .route-readout { min-height: 36px; flex: 1; padding: 6px 10px; color: var(--navy); background: var(--blue-soft); border: 1px solid transparent; border-radius: 8px; font-weight: 650; }
+    .compact-field { display: flex; align-items: center; gap: 8px; color: var(--muted); white-space: nowrap; }
+    .compact-field input { width: 96px; }
+    .annealing-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .annealing-table th { text-align: center; color: var(--muted); padding: 7px 4px; white-space: nowrap; }
+    .annealing-table td { padding: 6px 4px; text-align: center; border-top: 1px solid var(--line); }
+    .annealing-table input, .annealing-table select { width: 76px; min-height: 35px; padding: 4px 6px; }
+    .annealing-table .given { font-weight: 650; color: var(--navy); }
+    .current-state { display: inline-grid; place-items: center; min-width: 40px; min-height: 34px; border-radius: 8px; background: var(--blue-soft); color: var(--navy); font-weight: 700; }
+    .exponent-field { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+    .exponent-field input { width: 62px; }
+    .probability-output { display: inline-block; min-width: 72px; color: var(--navy); font-weight: 700; text-align: left; }
+    .annealing-wrap { overflow-x: auto; }
+    .tree-area { padding: 0 22px 22px; }
+    .tree-canvas {
+      width: 100%; overflow-x: auto; border: 1px solid var(--line); border-radius: 14px;
+      background: linear-gradient(180deg, #fbfcff, #f6f8fc);
+    }
+    .tree-stage { width: 1060px; height: 520px; position: relative; margin: 0 auto; }
+    .tree-node {
+      position: absolute; transform: translate(-50%, -50%); width: 66px; min-height: 51px;
+      display: grid; place-items: center; align-content: center; gap: 2px;
+      border: 2px solid var(--navy); border-radius: 11px; background: var(--paper);
+      box-shadow: 0 4px 10px rgba(32,56,100,.1); user-select: none;
+    }
+    .tree-node.min { border-color: var(--amber); }
+    .tree-node.leaf { width: 50px; min-height: 43px; border-radius: 50%; border-color: #76839b; font-size: 16px; font-weight: 700; }
+    .tree-node .node-name { color: var(--muted); font-size: 11px; line-height: 1; }
+    .tree-node input { width: 45px; min-height: 26px; padding: 2px 4px; text-align: center; border-radius: 6px; }
+    .tree-node.pruned { border-color: var(--red); background: var(--red-soft); opacity: .62; }
+    .tree-node.pruned::after { content: "×"; position: absolute; font-size: 54px; line-height: 1; color: var(--red); opacity: .55; }
+    .tree-edge.pruned { stroke: var(--red); opacity: .5; stroke-dasharray: 5 4; }
+    .tree-toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin: 11px 0 8px; }
+    .tree-toolbar p { margin: 0; color: var(--muted); font-size: 13px; }
+    .game-answers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+    .game-answers label { color: var(--muted); }
+    .card-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+    .beam-all-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+    .beam-branch { padding:10px; border:1px solid var(--line); border-radius:10px; background:#f8faff; }
+    .beam-branch h4 { margin:0 0 8px; color:var(--navy); text-align:center; }
+    .beam-branch .candidate { width:100%; min-height:52px; margin-top:6px; }
+    .candidate { min-height:68px; display:grid; place-items:center; gap:1px; }
+    .candidate.selected { color:#fff; background:var(--navy); border-color:var(--navy); }
+    .candidate small { opacity:.8; }
+    .answer-block { margin-top:14px; padding:14px; border:1px solid var(--line); border-radius:12px; }
+    .answer-block h3 { margin:0 0 10px; }
+    .ga-table { width:100%; border-collapse:collapse; }
+    .ga-table th,.ga-table td { padding:7px; border-bottom:1px solid var(--line); text-align:center; }
+    .ga-table input,.ga-table select { width:100%; min-width:70px; }
+    .ga-fraction { display:inline-flex; align-items:center; justify-content:center; gap:5px; padding:4px; border:1px solid transparent; border-radius:8px; white-space:nowrap; }
+    .ga-fraction input { width:58px; min-width:0; text-align:center; }
+    .ga-probability-output { min-width:48px; color:var(--navy); font-weight:700; text-align:left; }
+    .bit-input { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.12em; }
+    .optional-badge { display:inline-block; margin-left:8px; padding:3px 8px; color:#7a4b00; background:var(--amber-soft); border-radius:999px; font-size:12px; vertical-align:middle; }
+    .status { min-height: 25px; font-weight: 650; }
+    .status.success { color: var(--green); }
+    .status.warn { color: var(--amber); }
+    .status.error { color: var(--red); }
+    .correct { border-color: var(--green) !important; box-shadow: 0 0 0 3px rgba(20,122,85,.10) !important; }
+    .incorrect { border-color: var(--red) !important; box-shadow: 0 0 0 3px rgba(180,35,24,.09) !important; }
+    .loading { opacity: .55; pointer-events: none; }
+    @media (max-width: 900px) {
+      .workspace { grid-template-columns: 1fr; }
+      .hero { grid-template-columns: 1fr; align-items: start; }
+      .source-tag { justify-self: start; }
+    }
+    @media (max-width: 600px) {
+      .shell { width: min(100% - 18px, 1180px); margin-top: 16px; }
+      .section-head, .workspace, .tree-area { padding-left: 14px; padding-right: 14px; }
+      .instructions { margin-left: 14px; margin-right: 14px; }
+      .result-panel { grid-template-columns: 1fr; }
+      .game-answers, .inline-fields { grid-template-columns: 1fr; }
+      .sequence-grid,.card-grid { grid-template-columns:1fr 1fr; }
+      .setup-row button { flex: 1 1 auto; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <h1>搜索算法计算题</h1>
+        <p class="subtitle">图搜索 · 局部搜索 · Beam Search · 遗传算法 · 对抗搜索</p>
+      </div>
+      <div id="sourceTag" class="source-tag">尚未生成题目</div>
+    </header>
+
+    <section class="setup" aria-label="出题设置">
+      <div class="setup-row">
+        <label>学号固定出题
+          <input id="studentId" type="text" inputmode="numeric" placeholder="输入学号" autocomplete="off">
+        </label>
+        <button id="studentBtn" class="primary" type="button">按学号生成</button>
+        <button id="practiceBtn" type="button">随机生成练习题</button>
+        <button id="checkBtn" type="button" disabled>检查全部答案</button>
+      </div>
+      <div id="resultPanel" class="result-panel">
+        <div class="result-group graded">
+          <div class="result-label">计分部分（第一至第四部分）</div>
+          <div id="status" class="status" role="status" aria-live="polite">生成题目后即可答题并检查。</div>
+          <ul id="resultDetails" class="result-details"></ul>
+        </div>
+        <div class="result-group practice">
+          <div class="result-label">不计分练习（Minimax 与 Alpha-Beta）</div>
+          <div id="practiceStatus" class="status" role="status" aria-live="polite">可留空，不影响本题通过。</div>
+          <ul id="practiceDetails" class="result-details"></ul>
+        </div>
+      </div>
+    </section>
+
+    <details class="operation-guide" open>
+      <summary>操作指引（首次使用请展开阅读）</summary>
+      <ol>
+        <li><strong>正式作答：</strong>输入学号后点击“按学号生成”；同一学号始终得到同一套题。“随机生成练习题”仅用于练习。</li>
+        <li><strong>填写答案：</strong>第一至第四部分计入成绩；按页面顺序点击节点、选项或填写数值。第五部分不计成绩，可留空。</li>
+        <li><strong>检查修改：</strong>点击“检查全部答案”后，红色边框和顶部提示会标出需要检查的步骤；修改后可重复检查。</li>
+        <li><strong>完成截图：</strong>所有计分项正确后，顶部会显示“全部正确”和学号题组信息，请截取包含该结果的界面。重新生成题目会清空当前作答。</li>
+      </ol>
+    </details>
+
+    <div id="question" class="question">
+      <section class="section">
+        <div class="section-head">
+          <div class="part-no">一</div>
+          <div><h2>BFS、DFS、UCS 与 A*</h2><p>搜索边界（frontier）的顺序与更新</p></div>
+        </div>
+        <div class="instructions">
+          从 S 出发搜索 G，使用<strong>图搜索</strong>，从 frontier 取出节点时才做目标测试。子节点按字母顺序生成；DFS 选择字母序更小的后继先扩展；UCS 按 g 排序，A* 按 f=g+h 排序，平局均按字母顺序。若到同一 frontier 节点的新路径更优，用新路径替换旧路径；已扩展节点不重新打开。<br><strong>界面操作：</strong>直接点击右侧 BFS、DFS、UCS 或 A* 的答题卡片，再按你认为正确的扩展顺序点击图中节点。界面会自动标记已扩展节点、frontier、当前路径和对应数值；可随时撤销或清空。
+        </div>
+        <div class="workspace">
+          <div class="graph-wrap"><div class="graph-title">边上是路径代价；节点会实时显示访问状态、当前路径与数值。</div><div class="graph-canvas"><div id="frontierGraph" class="graph-stage"></div></div><div id="searchLive" class="search-live">请先选择一种算法。</div></div>
+          <div class="answers">
+            <div id="sequenceGrid" class="sequence-grid"></div>
+            <div class="answer-block"><h3>A* 每次扩展后的 frontier</h3><p style="font-size:13px;color:var(--muted)">选择 A* 并点击节点后，界面会自动记录（节点:g/f），无需手工输入。</p><div id="frontierRows" class="frontier-record"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div class="part-no">二</div>
+          <div><h2>局部搜索与模拟退火</h2><p>爬山法、局部最优与概率接受</p></div>
+        </div>
+        <div class="instructions">
+          目标是最大化状态得分，相邻字母互为邻居。爬山法每次移动到得分最高且严格更优的邻居；模拟退火按照给定候选状态、温度 T 和随机数 r 运行。填写 Δ 和指数 Δ/T（指数保留两位小数）后，界面会自动计算 e^指数并保留两位小数。若 Δ≥0 必定接受，否则在 r&lt;e^(Δ/T) 时移动。每步选择的“下一状态”会自动成为下一步的“当前状态”。<br><strong>界面操作：</strong>起点已自动记入爬山路径，从下一个状态开始依次点击；误点可撤销。模拟退火逐行填写，先选“下一状态”后，下一行的“当前”会自动更新。
+        </div>
+        <div class="tree-area">
+          <div class="graph-title"><span>柱高与数字均表示目标函数值。点击状态，按顺序记录爬山法经过的路径。</span></div>
+          <div class="graph-canvas"><div id="landscape" class="landscape"></div></div>
+          <div class="route-tools">
+            <strong>1. 爬山法路径</strong>
+            <div id="hillRoute" class="route-readout">尚未选择</div>
+            <button id="undoHill" type="button">撤销一步</button>
+            <button id="clearHill" type="button">清空</button>
+            <label class="compact-field"><span>终点得分</span><input id="hillFinalScore" type="number"></label>
+          </div>
+          <h3>2. 完成模拟退火的 6 步计算</h3>
+          <div class="annealing-wrap">
+            <table class="annealing-table">
+              <thead><tr><th>步</th><th>当前</th><th>T</th><th>候选</th><th>Δ</th><th>接受概率（保留两位小数）</th><th>r</th><th>接受？</th><th>下一状态</th></tr></thead>
+              <tbody id="annealingRows"></tbody>
+            </table>
+          </div>
+          <div class="game-answers">
+            <label>3. 模拟退火最终状态<select id="annealingFinal"></select></label>
+            <label>4. 过程中到达的最高分状态<select id="annealingBest"></select></label>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div class="part-no">三</div>
+          <div><h2>Local Beam Search</h2><p>同时保留 k 个状态，共享各路搜索信息</p></div>
+        </div>
+        <div class="instructions">
+          本题的启发值 h 越小越好，k=2。每轮只扩展当前 beam 内的状态，再在它们生成的全部后继中保留 h 最小的 2 个；h 相同时按节点名字典序。<br><strong>界面操作：</strong>第二步会把 A–D 四个状态的 12 个后继全部画出来，但只有第一轮 beam 中的两个状态会被真正扩展。请先选出真正被搜到的 6 个后继，再从中选出第二轮 beam。再点一次可取消；修改前一步会清空后续答案。
+        </div>
+        <div class="tree-area">
+          <h3>1. 在初始候选中选出第一轮 beam（点击 2 个）</h3><div id="beamFirst" class="card-grid"></div>
+          <div class="answer-block"><h3>2. 四个初始状态的后继均已展示：选出真正会被搜到的 6 个节点</h3><p style="font-size:13px;color:var(--muted)">另外 6 个节点的父节点不在第一轮 beam 中，因此不会被探索。</p><div id="beamExplored" class="beam-all-grid"></div></div>
+          <div class="answer-block"><h3>3. 从真正搜到的节点中选出第二轮 beam（点击 2 个）</h3><div id="beamSecond" class="card-grid"></div></div>
+          <label style="margin-top:14px">4. 第二轮 beam 中最优状态<select id="beamFinal"></select></label>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div class="part-no">四</div>
+          <div><h2>遗传算法</h2><p>适应度、轮盘赌选择、单点交叉与位反转变异</p></div>
+        </div>
+        <div class="instructions" id="geneticInstructions"></div>
+        <div class="tree-area">
+          <div class="annealing-wrap"><table class="ga-table"><thead><tr><th>个体</th><th>染色体</th><th>适应度 F</th><th>轮盘赌概率（填写分子/分母）</th></tr></thead><tbody id="geneticIndividuals"></tbody></table></div>
+          <div class="answer-block"><h3>1. 轮盘赌选择</h3><div id="parentSelectors" class="game-answers"></div></div>
+          <div class="answer-block"><h3>2. 单点交叉后的两个子代</h3><div id="crossInputs" class="game-answers"></div></div>
+          <div class="answer-block"><h3>3. 指定位反转变异后的子代及其适应度</h3><div id="mutationInputs" class="game-answers"></div></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div class="part-no">五</div>
+          <div><h2>Minimax 与 Alpha-Beta 剪枝 <span class="optional-badge">不计成绩 · 不要求完成</span></h2><p>仅用作期末复习练习</p></div>
+        </div>
+        <div class="instructions">
+          <strong>本部分不计入本次作业成绩，不要求完成，仅供期末复习。</strong>根节点为 MAX，之后 MIN/MAX 交替。先填写每个内部节点的 minimax 值；再假定 Alpha-Beta 按从左到右的深度优先顺序搜索，点击所有“不会被访问”的节点。<br><strong>界面操作：</strong>在内部节点的输入框中填 minimax 值；点击节点的边框可标记/取消剪枝。标记一个内部节点时，其整棵子树会一并标记。
+        </div>
+        <div class="tree-area">
+          <div class="tree-toolbar">
+            <div class="legend"><span>MAX 节点</span><span>MIN 节点</span></div>
+            <p>点击节点可切换“被剪枝”标记；内部节点的输入框仍可单独填写。</p>
+          </div>
+          <div class="tree-canvas"><div id="gameTree" class="tree-stage"></div></div>
+          <div class="game-answers">
+            <label>4. 根节点最终选择
+              <select id="bestChild"></select>
+            </label>
+            <label>5. 实际评估的叶节点数
+              <input id="evaluatedCount" type="number" min="0">
+            </label>
+            <label>当前已标记剪枝节点数
+              <input id="prunedCount" type="text" value="0" readonly>
+            </label>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const state = { question: null, pruned: new Set(), hillRoute: [], gameChildren: {}, sequences:{bfs_order:[],dfs_order:[],ucs_order:[],astar_order:[]}, activeSequence:'bfs_order', searchRuns:{}, beamFirst:new Set(), beamExplored:new Set(), beamSecond:new Set() };
+    const $ = (selector) => document.querySelector(selector);
+
+    async function post(url, payload) {
+      const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || '请求失败');
+      return data;
+    }
+
+    function clearMarks() {
+      document.querySelectorAll('.correct,.incorrect').forEach(el => el.classList.remove('correct', 'incorrect'));
+    }
+
+    function stateOptions(ids, placeholder='—') {
+      return [`<option value="">${placeholder}</option>`, ...ids.map(id => `<option value="${id}">${id}</option>`)].join('');
+    }
+
+    function renderFrontierSearch(data) {
+      state.sequences={bfs_order:[],dfs_order:[],ucs_order:[],astar_order:[]}; state.activeSequence='bfs_order'; state.searchRuns={};
+      const stage=$('#frontierGraph'); stage.innerHTML='';
+      const svg=document.createElementNS('http://www.w3.org/2000/svg','svg'); stage.append(svg);
+      const nodes=Object.fromEntries(data.nodes.map(node=>[node.id,node]));
+      data.edges.forEach(edge=>{
+        const a=nodes[edge.source],b=nodes[edge.target];
+        const line=document.createElementNS(svg.namespaceURI,'line'); line.setAttribute('x1',a.x);line.setAttribute('y1',a.y);line.setAttribute('x2',b.x);line.setAttribute('y2',b.y);line.setAttribute('class','edge');svg.append(line);
+        const label=document.createElementNS(svg.namespaceURI,'text');label.setAttribute('x',(a.x+b.x)/2);label.setAttribute('y',(a.y+b.y)/2-6);label.setAttribute('class','edge-label');label.textContent=edge.cost;svg.append(label);
+      });
+      data.nodes.forEach(node=>{const button=document.createElement('button');button.type='button';button.className='a-node';button.style.left=`${node.x}px`;button.style.top=`${node.y}px`;button.dataset.id=node.id;button.addEventListener('click',()=>addSearchNode(node.id));stage.append(button);});
+      const names={bfs_order:'BFS',dfs_order:'DFS',ucs_order:'UCS',astar_order:'A*'}; const grid=$('#sequenceGrid');grid.innerHTML='';
+      Object.entries(names).forEach(([key,name])=>{const box=document.createElement('div');box.className='answer-block';box.dataset.sequence=key;box.innerHTML=`<h3>${name} 扩展顺序</h3><button type="button" class="sequence-box" aria-label="选择 ${name} 并填写">点击选择此算法</button><div class="sequence-actions"><button type="button" class="activate">选择此算法</button><button type="button" class="undo">撤销</button><button type="button" class="clear">清空</button></div>`;const activate=()=>{state.activeSequence=key;updateSequences();};box.querySelector('.sequence-box').onclick=activate;box.querySelector('.activate').onclick=activate;box.querySelector('.undo').onclick=()=>{state.sequences[key].pop();state.activeSequence=key;updateSequences();};box.querySelector('.clear').onclick=()=>{state.sequences[key]=[];state.activeSequence=key;updateSequences();};grid.append(box);});
+      const rows=$('#frontierRows');rows.innerHTML='';data.snapshot_labels.forEach((node,index)=>{const row=document.createElement('div');row.className='frontier-record-row pending';row.dataset.index=index;row.textContent=`第 ${index+1} 步：尚未扩展`;rows.append(row);});
+      updateSequences();
+    }
+
+    function simulateSearch(key, sequence) {
+      const data=state.question.frontier_search;
+      const adjacency=Object.fromEntries(data.nodes.map(node=>[node.id,[]]));
+      data.edges.forEach(edge=>adjacency[edge.source].push({id:edge.target,cost:edge.cost}));
+      Object.values(adjacency).forEach(children=>children.sort((a,b)=>a.id.localeCompare(b.id)));
+      const heuristics=Object.fromEntries(data.nodes.map(node=>[node.id,node.h]));
+      const frontier=new Map([['S',{g:0,path:['S'],depth:0,stamp:0}]]);
+      const expanded=new Set(); const snapshots=[]; let current=null; let invalid=null; let stamp=1;
+      const rank=(id,entry)=>key==='bfs_order'?[entry.stamp,id]:key==='dfs_order'?[-entry.stamp,id]:key==='ucs_order'?[entry.g,id]:[entry.g+heuristics[id],id];
+      const sortedFrontier=()=>[...frontier.entries()].sort((a,b)=>{const ra=rank(a[0],a[1]),rb=rank(b[0],b[1]);return ra[0]-rb[0]||String(ra[1]).localeCompare(String(rb[1]));});
+      for(const id of sequence){
+        if(!frontier.has(id)||expanded.has(id)){invalid=id;break;}
+        const entry=frontier.get(id); frontier.delete(id); expanded.add(id); current=id;
+        if(id!=='G'){
+          let children=adjacency[id]; if(key==='dfs_order')children=[...children].reverse();
+          for(const child of children){
+            if(expanded.has(child.id))continue;
+            const candidate={g:entry.g+child.cost,path:[...entry.path,child.id],depth:entry.depth+1,stamp:stamp++};
+            const old=frontier.get(child.id);
+            if(!old)frontier.set(child.id,candidate);
+            else if((key==='ucs_order'||key==='astar_order')&&candidate.g<old.g){candidate.stamp=old.stamp;frontier.set(child.id,candidate);}
+          }
+        }
+        if(key==='astar_order'&&id!=='G')snapshots.push(sortedFrontier().map(([node,info])=>({id:node,g:info.g,f:info.g+heuristics[node]})));
+        if(id==='G')break;
+      }
+      return {frontier,frontierSorted:sortedFrontier(),expanded,current,invalid,snapshots,heuristics};
+    }
+
+    function addSearchNode(id){
+      const sequence=state.sequences[state.activeSequence];
+      if(sequence.includes(id)){$('#searchLive').innerHTML=`<strong>${id}</strong> 已经在当前扩展序列中，如需修改请先撤销。`;return;}
+      sequence.push(id); updateSequences();
+    }
+
+    function searchValueText(key,id,entry,heuristics){
+      if(!entry)return '';
+      if(key==='bfs_order'||key==='dfs_order')return `深度=${entry.depth}`;
+      if(key==='ucs_order')return `g=${entry.g}`;
+      return `g=${entry.g}，f=${entry.g+heuristics[id]}`;
+    }
+
+    function updateSearchGraph(run){
+      const key=state.activeSequence; const data=state.question.frontier_search;
+      document.querySelectorAll('#frontierGraph .a-node').forEach(button=>{
+        const id=button.dataset.id; const original=data.nodes.find(node=>node.id===id); const frontierEntry=run.frontier.get(id);
+        button.classList.toggle('expanded-node',run.expanded.has(id));button.classList.toggle('frontier-node',run.frontier.has(id));button.classList.toggle('current-node',id===run.current&&!run.invalid);button.classList.toggle('invalid-node',id===run.invalid);
+        let entry=frontierEntry;
+        if(run.expanded.has(id)){
+          const prefix=state.sequences[key].slice(0,state.sequences[key].indexOf(id)+1);
+          const before=simulateSearch(key,prefix.slice(0,-1)); entry=before.frontier.get(id)||entry;
+        }
+        const status=run.expanded.has(id)?'已扩展':run.frontier.has(id)?'frontier':'未发现';
+        const path=entry?entry.path.join('→'):'—'; const value=entry?searchValueText(key,id,entry,run.heuristics):`h=${original.h}`;
+        button.innerHTML=`<strong>${id}</strong><small>${status}</small><small>${path}</small><small>${value}</small>`;
+      });
+      const frontierText=run.frontierSorted.length?run.frontierSorted.map(([id,entry])=>`${id}(${searchValueText(key,id,entry,run.heuristics)})`).join(' → '):'空';
+      const names={bfs_order:'BFS',dfs_order:'DFS',ucs_order:'UCS',astar_order:'A*'};
+      $('#searchLive').innerHTML=run.invalid?`<strong>${names[key]}：</strong>节点 ${run.invalid} 尚未进入 frontier，本步无法扩展；请撤销后重选。`:`<strong>${names[key]}：</strong>已扩展 ${run.expanded.size} 个节点；当前 frontier 取出顺序：${frontierText}。`;
+    }
+
+    function updateFrontierRecords(run){
+      document.querySelectorAll('.frontier-record-row').forEach((row,index)=>{
+        const snapshot=run.snapshots[index];row.classList.toggle('pending',!snapshot);
+        row.textContent=snapshot?`第 ${index+1} 步：${snapshot.length?snapshot.map(item=>`${item.id}:${item.g}/${item.f}`).join(', '):'空'}`:`第 ${index+1} 步：尚未扩展`;
+      });
+    }
+
+    function updateSequences(){
+      document.querySelectorAll('[data-sequence]').forEach(box=>{const key=box.dataset.sequence;const active=key===state.activeSequence;box.classList.toggle('active-sequence',active);box.querySelector('.activate').textContent=active?'正在填写':'选择此算法';box.querySelector('.sequence-box').textContent=state.sequences[key].join(' → ')||(active?'已选中：请点击图中节点':'点击选择此算法');});
+      if(!state.question)return;
+      const run=simulateSearch(state.activeSequence,state.sequences[state.activeSequence]);state.searchRuns[state.activeSequence]=run;updateSearchGraph(run);
+      const astarRun=simulateSearch('astar_order',state.sequences.astar_order);state.searchRuns.astar_order=astarRun;updateFrontierRecords(astarRun);
+    }
+
+    function renderBeam(data){
+      state.beamFirst.clear();state.beamExplored.clear();state.beamSecond.clear();
+      const first=$('#beamFirst');first.innerHTML='';data.first.forEach(item=>first.append(makeCandidate(item,()=>toggleBeam('first',item.id,data))));
+      const explored=$('#beamExplored');explored.innerHTML='';
+      data.first.forEach(parent=>{const group=document.createElement('div');group.className='beam-branch';group.innerHTML=`<h4>${parent.id} 的后继</h4>`;data.second[parent.id].forEach(item=>group.append(makeCandidate(item,()=>toggleBeam('explored',item.id,data))));explored.append(group);});
+      renderBeamSecond(data);
+    }
+    function makeCandidate(item,handler){const button=document.createElement('button');button.type='button';button.className='candidate';button.dataset.id=item.id;button.innerHTML=`<strong>${item.id}</strong><small>h=${item.h}</small>`;button.onclick=handler;return button;}
+    function toggleBeam(round,id,data){
+      const set=round==='first'?state.beamFirst:round==='explored'?state.beamExplored:state.beamSecond;
+      const limit=round==='explored'?data.explored_count:data.k;
+      if(set.has(id))set.delete(id);else if(set.size<limit)set.add(id);
+      if(round==='first'){state.beamExplored.clear();state.beamSecond.clear();}
+      if(round==='explored')state.beamSecond.clear();
+      document.querySelectorAll(`#beam${round==='first'?'First':round==='explored'?'Explored':'Second'} .candidate`).forEach(button=>button.classList.toggle('selected',set.has(button.dataset.id)));
+      if(round==='first')document.querySelectorAll('#beamExplored .candidate').forEach(button=>button.classList.remove('selected'));
+      renderBeamSecond(data);
+    }
+    function renderBeamSecond(data){
+      const stage=$('#beamSecond');stage.innerHTML='';
+      const byId=Object.fromEntries(Object.values(data.second).flat().map(item=>[item.id,item]));
+      if(state.beamExplored.size===data.explored_count)[...state.beamExplored].sort().forEach(id=>stage.append(makeCandidate(byId[id],()=>toggleBeam('second',id,data))));
+      if(!stage.children.length)stage.textContent=`请先在上方选满 ${data.explored_count} 个真正会被搜到的节点。`;
+      else stage.querySelectorAll('.candidate').forEach(button=>button.classList.toggle('selected',state.beamSecond.has(button.dataset.id)));
+      $('#beamFinal').innerHTML=stateOptions([...state.beamSecond].sort(),state.beamSecond.size===data.k?'请选择':'请先选满第二轮 beam');
+    }
+
+    function renderGenetic(data){
+      $('#geneticInstructions').innerHTML=`染色体为 6 位二进制串，适应度 F(x)=1+${data.weights.map((w,i)=>`${w}x<sub>${i+1}</sub>`).join('+')}。选择概率 pᵢ=Fᵢ/ΣF，按 P1→P4 累加的轮盘赌区间选择，区间左闭右开。两次选择后，在第 ${data.crossover_point} 位之后交换后缀（即前 ${data.crossover_point} 位保留）；再分别反转子代1的第 ${data.mutation_positions[0]} 位和子代2的第 ${data.mutation_positions[1]} 位。<br><strong>界面操作：</strong>概率的分子填该个体的适应度 Fᵢ，分母填总适应度 ΣF，界面会自动算出小数；再用下拉框选父代，最后填写 6 位交叉/变异结果及新适应度。`;
+      const body=$('#geneticIndividuals');body.innerHTML='';data.individuals.forEach(item=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${item.id}</td><td><code>${item.bits}</code></td><td><input class="ga-fitness" data-id="${item.id}" type="number"></td><td><span class="ga-fraction" data-id="${item.id}"><input class="ga-probability-numerator" type="number" min="0" aria-label="${item.id}概率分子"><span>/</span><input class="ga-probability-denominator" type="number" min="1" aria-label="${item.id}概率分母"><span>=</span><output class="ga-probability-output">—</output></span></td>`;body.append(tr);});
+      body.querySelectorAll('.ga-probability-numerator,.ga-probability-denominator').forEach(input=>input.addEventListener('input',updateGeneticProbability));
+      const options=stateOptions(data.individuals.map(item=>item.id),'请选择');$('#parentSelectors').innerHTML=data.random_values.map((value,i)=>`<label>r${i+1}=${value.toFixed(2)} 选中的父代<select class="ga-parent">${options}</select></label>`).join('');
+      $('#crossInputs').innerHTML=[1,2].map(i=>`<label>子代 ${i}<input class="ga-crossed bit-input" type="text" maxlength="6" placeholder="6位二进制"></label>`).join('');
+      $('#mutationInputs').innerHTML=[1,2].map(i=>`<label>变异后子代 ${i}<input class="ga-mutated bit-input" type="text" maxlength="6"></label><label>子代 ${i} 适应度<input class="ga-final-fitness" type="number"></label>`).join('');
+    }
+
+    function updateGeneticProbability(event){
+      const fraction=event.target.closest('.ga-fraction');const numerator=Number(fraction.querySelector('.ga-probability-numerator').value);const denominator=Number(fraction.querySelector('.ga-probability-denominator').value);const output=fraction.querySelector('.ga-probability-output');
+      output.textContent=Number.isFinite(numerator)&&Number.isFinite(denominator)&&denominator>0?(numerator/denominator).toFixed(2):'—';
+    }
+
+    function updateHillRoute() {
+      $('#hillRoute').textContent = state.hillRoute.length ? state.hillRoute.join(' → ') : '尚未选择';
+      document.querySelectorAll('.land-state').forEach(button => button.classList.toggle('route', state.hillRoute.includes(button.dataset.id)));
+    }
+
+    function renderLocalSearch(data) {
+      const stage=$('#landscape'); stage.innerHTML=''; state.hillRoute=[data.start];
+      const maxScore=Math.max(...data.states.map(item=>item.score));
+      data.states.forEach(item => {
+        const column=document.createElement('div'); column.className='land-column';
+        const score=document.createElement('span'); score.className='land-score'; score.textContent=item.score;
+        const bar=document.createElement('div'); bar.className='land-bar'; bar.style.height=`${28 + item.score/maxScore*225}px`;
+        const button=document.createElement('button'); button.type='button'; button.className='land-state'; button.dataset.id=item.id; button.textContent=item.id;
+        if(item.id===data.start) button.classList.add('start');
+        button.addEventListener('click',()=>{ if(state.hillRoute.at(-1)!==item.id) state.hillRoute.push(item.id); updateHillRoute(); });
+        column.append(score,bar,button); stage.append(column);
+      });
+      updateHillRoute();
+
+      const rows=$('#annealingRows'); rows.innerHTML='';
+      data.annealing_steps.forEach(item => {
+        const tr=document.createElement('tr');
+        tr.innerHTML=`<td>${item.step}</td><td><span class="current-state sa-current">—</span></td><td class="given">${item.temperature}</td><td class="given">${item.candidate}</td><td><input class="sa-delta" type="number" aria-label="第${item.step}步差值"></td><td><span class="exponent-field"><span>e^</span><input class="sa-exponent" type="number" step="0.01" aria-label="第${item.step}步e的指数，保留两位小数"><span>=</span><output class="probability-output">—</output></span></td><td class="given">${item.random.toFixed(2)}</td><td><select class="sa-accepted" aria-label="第${item.step}步是否接受"><option value="">—</option><option value="true">是</option><option value="false">否</option></select></td><td><select class="sa-next" aria-label="第${item.step}步下一状态">${stateOptions(data.state_ids)}</select></td>`;
+        rows.append(tr);
+      });
+      rows.querySelectorAll('.sa-next').forEach(select => select.addEventListener('change', syncAnnealingStarts));
+      rows.querySelectorAll('.sa-exponent').forEach(input => input.addEventListener('input', updateProbabilityOutput));
+      syncAnnealingStarts();
+      const finalOptions=stateOptions(data.state_ids,'请选择');
+      $('#annealingFinal').innerHTML=finalOptions; $('#annealingBest').innerHTML=finalOptions;
+    }
+
+    function syncAnnealingStarts() {
+      if(!state.question) return;
+      let current=state.question.local_search.start;
+      document.querySelectorAll('#annealingRows tr').forEach(row => {
+        row.querySelector('.sa-current').textContent=current || '—';
+        current=row.querySelector('.sa-next').value;
+      });
+    }
+
+    function updateProbabilityOutput(event) {
+      const input=event.currentTarget;
+      const output=input.closest('.exponent-field').querySelector('.probability-output');
+      const exponent=Number(input.value);
+      if(input.value.trim()==='' || !Number.isFinite(exponent)) { output.textContent='—'; return; }
+      const raw=Math.exp(exponent);
+      output.textContent=exponent>=0 ? `${raw.toFixed(2)} → p=1.00` : raw.toFixed(2);
+    }
+
+    function treeLayout(nodes) {
+      const byId = Object.fromEntries(nodes.map(n => [n.id, n]));
+      const leaves = nodes.filter(n => !n.children.length);
+      const positions = {};
+      leaves.forEach((leaf, i) => positions[leaf.id] = { x: 42 + i*(976/Math.max(1, leaves.length-1)), y: 455 });
+      [2,1,0].forEach(depth => nodes.filter(n => n.depth===depth).forEach(node => {
+        const xs = node.children.map(id => positions[id].x);
+        positions[node.id] = { x: xs.reduce((a,b)=>a+b,0)/xs.length, y: 62 + depth*128 };
+      }));
+      return { byId, positions };
+    }
+
+    function renderGameTree(data) {
+      const stage = $('#gameTree'); stage.innerHTML = ''; state.pruned.clear(); $('#prunedCount').value='0';
+      state.gameChildren=Object.fromEntries(data.nodes.map(node=>[node.id,node.children]));
+      const { byId, positions } = treeLayout(data.nodes);
+      const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+      data.nodes.forEach(node => node.children.forEach(childId => {
+        const a=positions[node.id], b=positions[childId];
+        const line=document.createElementNS(svg.namespaceURI,'line'); line.setAttribute('x1',a.x); line.setAttribute('y1',a.y+28); line.setAttribute('x2',b.x); line.setAttribute('y2',b.y-25); line.setAttribute('class','edge tree-edge'); line.dataset.child=childId; svg.append(line);
+      }));
+      stage.append(svg);
+      data.nodes.forEach(node => {
+        const pos=positions[node.id], el=document.createElement('div');
+        el.className=`tree-node ${node.children.length ? (node.depth%2===0?'max':'min') : 'leaf'}`;
+        el.style.left=`${pos.x}px`; el.style.top=`${pos.y}px`; el.dataset.id=node.id;
+        if (node.children.length) {
+          const name=document.createElement('span'); name.className='node-name'; name.textContent=`${node.id} · ${node.depth%2===0?'MAX':'MIN'}`;
+          const input=document.createElement('input'); input.type='number'; input.className='minimax-value'; input.dataset.id=node.id; input.setAttribute('aria-label', `${node.id}的minimax值`);
+          input.addEventListener('click', event => event.stopPropagation());
+          el.append(name,input);
+        } else { el.textContent=node.utility; el.setAttribute('aria-label', `${node.id}，效用值${node.utility}`); }
+        el.addEventListener('click', () => togglePruned(node.id));
+        stage.append(el);
+      });
+      const best=$('#bestChild'); best.innerHTML='<option value="">请选择根节点的动作</option>' + data.root_children.map((id,i)=>`<option value="${id}">动作 ${String.fromCharCode(65+i)}（${id}）</option>`).join('');
+    }
+
+    function togglePruned(id) {
+      const subtree=[]; const pending=[id];
+      while(pending.length) {
+        const current=pending.pop(); subtree.push(current);
+        pending.push(...(state.gameChildren[current]||[]));
+      }
+      const shouldPrune=!state.pruned.has(id);
+      subtree.forEach(nodeId=>{
+        shouldPrune ? state.pruned.add(nodeId) : state.pruned.delete(nodeId);
+        const node=document.querySelector(`.tree-node[data-id="${nodeId}"]`); node?.classList.toggle('pruned',shouldPrune);
+        const edge=document.querySelector(`.tree-edge[data-child="${nodeId}"]`); if(edge) edge.classList.toggle('pruned',shouldPrune);
+      });
+      $('#prunedCount').value=state.pruned.size;
+    }
+
+    async function generate(mode) {
+      const controls=$('.setup'); controls.classList.add('loading'); clearMarks();
+      $('#resultPanel').classList.remove('passed'); $('#resultDetails').innerHTML=''; $('#practiceDetails').innerHTML=''; $('#checkBtn').disabled=true;
+      $('#practiceStatus').className='status'; $('#practiceStatus').textContent='可留空，不影响本题通过。';
+      $('#status').className='status'; $('#status').textContent='正在生成难度相当的新题目…';
+      try {
+        const payload={mode}; if(mode==='student') payload.student_id=$('#studentId').value.trim();
+        const data=await post('/api/question', payload);
+        const required=['frontier_search','local_search','beam_search','genetic','game'];
+        const missing=required.filter(key=>!data[key]);
+        if(missing.length) throw new Error(`当前页面与后台服务版本不一致（缺少 ${missing.join('、')} ）。请关闭旧的可视化进程，重新运行 visualizer.py 后刷新页面。`);
+        state.question=data;
+        $('#sourceTag').textContent=data.source_label; renderFrontierSearch(data.frontier_search);renderLocalSearch(data.local_search);renderBeam(data.beam_search);renderGenetic(data.genetic);renderGameTree(data.game);
+        $('#hillFinalScore').value=''; $('#evaluatedCount').value='';
+        $('#question').classList.add('visible'); $('#status').textContent='题目已生成。完成后点击“检查全部答案”。'; $('#checkBtn').disabled=false;
+        $('#question').scrollIntoView({behavior:'smooth', block:'start'});
+      } catch(error) { $('#status').className='status error'; $('#status').textContent=error.message; alert(error.message); }
+      finally { controls.classList.remove('loading'); }
+    }
+
+    function collectAnswers() {
+      const annealingRows=[...document.querySelectorAll('#annealingRows tr')].map(row => {
+        const accepted=row.querySelector('.sa-accepted').value;
+        return { delta:row.querySelector('.sa-delta').value, exponent:row.querySelector('.sa-exponent').value, accepted:accepted===''?null:accepted==='true', next:row.querySelector('.sa-next').value };
+      });
+      const values={}; document.querySelectorAll('.minimax-value').forEach(input => values[input.dataset.id]=input.value);
+      const fitness={},probabilities={};document.querySelectorAll('.ga-fitness').forEach(input=>fitness[input.dataset.id]=input.value);document.querySelectorAll('.ga-fraction').forEach(field=>probabilities[field.dataset.id]={numerator:field.querySelector('.ga-probability-numerator').value,denominator:field.querySelector('.ga-probability-denominator').value});
+      return {
+        frontier_search:{...state.sequences,astar_frontiers:(state.searchRuns.astar_order?.snapshots||[])},
+        local_search: { hill_route:[...state.hillRoute], hill_final_score:$('#hillFinalScore').value, annealing_rows:annealingRows, annealing_final:$('#annealingFinal').value, annealing_best:$('#annealingBest').value },
+        beam_search:{first:[...state.beamFirst],explored:[...state.beamExplored],second:[...state.beamSecond],final:$('#beamFinal').value},
+        genetic:{fitness,probabilities,parents:[...document.querySelectorAll('.ga-parent')].map(input=>input.value),crossed:[...document.querySelectorAll('.ga-crossed')].map(input=>input.value.trim()),mutated:[...document.querySelectorAll('.ga-mutated')].map(input=>input.value.trim()),final_fitness:[...document.querySelectorAll('.ga-final-fitness')].map(input=>input.value)},
+        game: { values, pruned:[...state.pruned], best_child:$('#bestChild').value, evaluated_count:$('#evaluatedCount').value }
+      };
+    }
+
+    function mark(element, good) { element.classList.remove('correct','incorrect'); element.classList.add(good?'correct':'incorrect'); }
+    function applyResults(result) {
+      clearMarks();
+      const algorithmNames={bfs_order:'BFS',dfs_order:'DFS',ucs_order:'UCS',astar_order:'A*'};
+      Object.entries(algorithmNames).forEach(([key])=>mark(document.querySelector(`[data-sequence="${key}"] .sequence-box`),result.frontier_search[key]));
+      document.querySelectorAll('.frontier-record-row').forEach((row,index)=>mark(row,result.frontier_search.astar_frontiers[index]));
+      mark($('#hillRoute'),result.local_search.hill_route); mark($('#hillFinalScore'),result.local_search.hill_final_score);
+      [...document.querySelectorAll('#annealingRows tr')].forEach((row,i) => {
+        const checks=result.local_search.annealing_rows[i];
+        mark(row.querySelector('.sa-delta'),checks.delta); mark(row.querySelector('.sa-exponent'),checks.exponent);
+        mark(row.querySelector('.sa-accepted'),checks.accepted); mark(row.querySelector('.sa-next'),checks.next);
+      });
+      mark($('#annealingFinal'),result.local_search.annealing_final); mark($('#annealingBest'),result.local_search.annealing_best);
+      mark($('#beamFirst'),result.beam_search.first);mark($('#beamExplored'),result.beam_search.explored);mark($('#beamSecond'),result.beam_search.second);mark($('#beamFinal'),result.beam_search.final);
+      Object.entries(result.genetic.fitness).forEach(([id,good])=>mark(document.querySelector(`.ga-fitness[data-id="${id}"]`),good));Object.entries(result.genetic.probabilities).forEach(([id,good])=>mark(document.querySelector(`.ga-fraction[data-id="${id}"]`),good));
+      document.querySelectorAll('.ga-parent').forEach(input=>mark(input,result.genetic.parents));document.querySelectorAll('.ga-crossed').forEach(input=>mark(input,result.genetic.crossed));document.querySelectorAll('.ga-mutated').forEach(input=>mark(input,result.genetic.mutated));document.querySelectorAll('.ga-final-fitness').forEach(input=>mark(input,result.genetic.final_fitness));
+      const gameAttempted=[...document.querySelectorAll('.minimax-value')].some(input=>input.value!=='')||state.pruned.size>0||$('#bestChild').value!==''||$('#evaluatedCount').value!=='';
+      if(gameAttempted){Object.entries(result.game.values).forEach(([id,good]) => mark(document.querySelector(`.minimax-value[data-id="${id}"]`),good));mark($('.tree-canvas'),result.game.pruned); mark($('#bestChild'),result.game.best_child); mark($('#evaluatedCount'),result.game.evaluated_count);}
+      const gradedDetails=[];
+      const practiceDetails=[];
+      Object.entries(algorithmNames).forEach(([key,name])=>{if(!result.frontier_search[key])gradedDetails.push(`${name} 扩展顺序不正确，请检查 frontier 的取出规则。`);});
+      const wrongFrontiers=result.frontier_search.astar_frontiers.map((good,index)=>good?null:index+1).filter(Boolean);if(wrongFrontiers.length)gradedDetails.push(`A* frontier 记录需检查第 ${wrongFrontiers.join('、')} 步，特别注意更优路径要替换旧记录。`);
+      if(!result.local_search.hill_route) gradedDetails.push(`爬山法路径：从第 ${result.local_search.hill_first_wrong_step} 个状态开始不正确，请检查是否总是选择得分最高且严格更优的相邻状态。`);
+      if(!result.local_search.hill_final_score) gradedDetails.push('爬山法终点得分不正确，请读取路径最后一个状态的柱状图数值。');
+      const fieldNames={delta:'Δ',exponent:'e 的指数 Δ/T',accepted:'是否接受',next:'下一状态'};
+      result.local_search.annealing_rows.forEach((checks,index) => {
+        const wrong=Object.entries(checks).filter(([,good])=>!good).map(([field])=>fieldNames[field]);
+        if(wrong.length) gradedDetails.push(`模拟退火第 ${index+1} 步：请检查 ${wrong.join('、')}。`);
+      });
+      if(!result.local_search.annealing_final) gradedDetails.push('模拟退火最终状态不正确，应与第 6 步选择的下一状态一致。');
+      if(!result.local_search.annealing_best) gradedDetails.push('最高分状态不正确，请比较起点和每次实际到达状态的得分。');
+      if(!result.beam_search.first)gradedDetails.push('Beam Search 第一轮保留状态不正确。');if(!result.beam_search.explored)gradedDetails.push('Beam Search 真正被搜到的节点不正确：只有第一轮 beam 中节点的后继会被生成。');if(!result.beam_search.second)gradedDetails.push('Beam Search 第二轮需在全部 6 个已搜到后继中统一选择。');if(!result.beam_search.final)gradedDetails.push('Beam Search 最终最优状态不正确。');
+      if(Object.values(result.genetic.fitness).some(good=>!good))gradedDetails.push('遗传算法：请检查适应度计算。');if(Object.values(result.genetic.probabilities).some(good=>!good))gradedDetails.push('遗传算法：请检查轮盘赌概率的分子 Fᵢ 和分母 ΣF。');if(!result.genetic.parents)gradedDetails.push('遗传算法：轮盘赌选择的父代不正确。');if(!result.genetic.crossed)gradedDetails.push('遗传算法：请检查交叉点两侧的保留与交换。');if(!result.genetic.mutated||!result.genetic.final_fitness)gradedDetails.push('遗传算法：请检查指定位反转及变异后的适应度。');
+      if(gameAttempted){const wrongValueIds=Object.entries(result.game.values).filter(([,good])=>!good).map(([id])=>id);if(wrongValueIds.length) practiceDetails.push(`Minimax 值需检查：${wrongValueIds.join('、')}。`);if(!result.game.pruned) practiceDetails.push(`Alpha-Beta 剪枝：少剪 ${result.game.pruned_missing_count} 个，多剪 ${result.game.pruned_extra_count} 个。`);if(!result.game.best_child)practiceDetails.push('根节点最终选择不正确。');if(!result.game.evaluated_count)practiceDetails.push('实际评估的叶节点数不正确。');}
+      $('#resultDetails').innerHTML=gradedDetails.map(text=>`<li>${text}</li>`).join('');
+      $('#practiceDetails').innerHTML=practiceDetails.map(text=>`<li>${text}</li>`).join('');
+      if(!result.practice.attempted){$('#practiceStatus').className='status';$('#practiceStatus').textContent='未作答（不计分，不影响本题通过）。';}
+      else if(result.practice.all_correct){$('#practiceStatus').className='status success';$('#practiceStatus').textContent=`期末复习部分全部正确（${result.practice.correct_count} / ${result.practice.total_count}）。`;}
+      else{$('#practiceStatus').className='status warn';$('#practiceStatus').textContent=`期末复习部分已答对 ${result.practice.correct_count} / ${result.practice.total_count} 项（不影响本题通过）。`;}
+      if(result.all_correct) {
+        $('#resultPanel').classList.add('passed'); $('#status').className='status success';
+        $('#status').textContent=`计分部分全部正确！${state.question.source_label} 已通过本题（${result.correct_count} / ${result.total_count}）。`;
+      } else {
+        $('#resultPanel').classList.remove('passed'); $('#status').className='status warn';
+        $('#status').textContent=`计分部分已答对 ${result.correct_count} / ${result.total_count} 项。请根据下方提示修改后再次检查。`;
+      }
+    }
+
+    $('#studentBtn').addEventListener('click',()=>generate('student'));
+    $('#practiceBtn').addEventListener('click',()=>generate('practice'));
+    $('#undoHill').addEventListener('click',()=>{ if(state.hillRoute.length>1) state.hillRoute.pop(); updateHillRoute(); });
+    $('#clearHill').addEventListener('click',()=>{ state.hillRoute=state.question?[state.question.local_search.start]:[]; updateHillRoute(); });
+    $('#studentId').addEventListener('keydown',event=>{if(event.key==='Enter') generate('student');});
+    $('#checkBtn').addEventListener('click',async()=>{
+      if(!state.question) return;
+      $('#checkBtn').disabled=true;
+      try { applyResults(await post('/api/check',{question_id:state.question.question_id,answers:collectAnswers()})); }
+      catch(error) { $('#status').className='status error'; $('#status').textContent=error.message; }
+      finally { $('#checkBtn').disabled=false; }
+    });
+  </script>
+</body>
+</html>

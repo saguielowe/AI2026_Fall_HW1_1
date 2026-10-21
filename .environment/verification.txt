@@ -1,0 +1,20 @@
+Python: 3.11.15 (D:\Users\23329\Desktop\综合\学习\清华大学\大三上\AI2026_Fall_HW1_1\.venv\Scripts\python.exe)
+numpy: 2.4.6
+tqdm: 4.70.1
+cython: 3.3.0
+matplotlib: 3.11.2
+pytest: 9.1.1
+setuptools: 84.0.0
+pip: 26.2.1
+No broken requirements found.
+Go extension OK: D:\Users\23329\Desktop\综合\学习\清华大学\大三上\AI2026_Fall_HW1_1\code\mcts\env\go\goboard.cp311-win_amd64.pyd
+5x5 / 7x7 reset, legal mask, step and independent fork OK
+calculation: HTTP 200, HTML served
+sudoku: HTTP 200, HTML served
+sudoku: initial state API OK
+Sudoku reports an algorithm error; TODOs are intentionally incomplete.
+mcts: HTTP 200, HTML served
+mcts: initial state API OK
+Original Python / Cython / handwritten C++ files unchanged.
+Regenerated build source: ['code/mcts/env/go/goboard.cpp']
+Environment checks passed; no homework answers or algorithm experiments were run.

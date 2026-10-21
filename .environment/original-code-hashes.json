@@ -1,0 +1,186 @@
+[
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\calculation\\generator.py",
+    "Hash": "E76E33155D60A12C2BE66D742E9C0F2A5BDB3511977DC773FD5238708771F996"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\calculation\\index.html",
+    "Hash": "1E039094C96673F787E13073F186D72AB4FE34BAFC0584A422A0704B3F6FC334"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\calculation\\README.md",
+    "Hash": "89B02956549BC982818FE579254DF5779491FCD24C593147362A56B8AF32E9FB"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\calculation\\test_calculation.py",
+    "Hash": "5491004988D9957E40F05BAD0A9A6F42A5D3EF1CE0049E35169783453A81D6E0"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\calculation\\visualizer.py",
+    "Hash": "1A2991CA5455A51EFC1FF2F31F50DDA1C8C81B12FD5EA9836933F61F46C7F43A"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\.gitignore",
+    "Hash": "6ED3BA38230A11283883E42C013DCF1B2AEA3799155ACD2EE23C68352D96048E"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\pit.py",
+    "Hash": "7998779C3465F5E4F002F8860DD0FF4A521F7FD7FAA2BFCE442FCBEF7FFF5093"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\README.md",
+    "Hash": "81EA8EFB9134A233C6FEA81E2273CF5EE0E3C427990026D52EEA610EC3349D3E"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\requirements.txt",
+    "Hash": "989B7E6BEF97C8C14F162379C63A92F0127841B5199BADF73ED774012D953E4C"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\test_alpha_beta.py",
+    "Hash": "10DBE95563327C43B10F9E5D1CDF9422933A8520B421937DF2034D89680C4081"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\test_heuristic_mcts.py",
+    "Hash": "B9A05DCF4A483C5AC49A02FA41975966DAB77FF5D651EA28CB598CA439B9ED83"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\test_uct_mcts.py",
+    "Hash": "70BD8EBC6B6B009764F1C9273D138DE5F2B5CB2A5ABE6B76C250403FA3780522"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\test_visualizer.py",
+    "Hash": "3C6EB02ED6E141C011A4A6DBF4ADF7B15000E017E88745A84B525EC90802330E"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\visualizer.py",
+    "Hash": "6D55E87E0D62FF9BA7886A47222EE05BBC8B9333AA7CB39AD00F798190AD8CE2"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\doc\\AI2026_HW_GoEnvManual.pdf",
+    "Hash": "E50A5D7B2E0F4E5FC94335E949CCF3331EB1A0930D30B33D3BF59EC0E2BEA6FE"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\env\\__init__.py",
+    "Hash": "049D0B9E210DF9D21626549DB5FA2CD6C4605716DE757BBD095B6BDFA021F991"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\env\\base_env.py",
+    "Hash": "E5F0673158C3931CA246CAA1B7DBF12A50A34030175067DF74C57431BE2D598A"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\env\\go\\board.cpp",
+    "Hash": "93BBE9CF13260AEB41A13B2A7A807C8576E3954B7E848197A0D5AD9DDF992024"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\env\\go\\board.h",
+    "Hash": "FF06F9FA88D07EFCD45DAA057CA392C4EA995861E17E8A6D1DA57FB24EDB41FF"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\env\\go\\go_env.py",
+    "Hash": "4122E0388FAB647A27A4DA69445EB31070EB14BED538A056C74D2D550C788885"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\env\\go\\goboard.cpp",
+    "Hash": "AB0CF083CE0C8C505269CA3DA581DF3DBCFD09A12AA4654B962E0D2C4B2B0F97"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\env\\go\\goboard.pxd",
+    "Hash": "9DDD913A87274A84A011227BFA9ED2B069414B417F34D5EA317FBCC72375DFD5"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\env\\go\\goboard.pyx",
+    "Hash": "29CDBFF967AF5941D516847D1955D76483981215C87D316C17256D5D2735130B"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\env\\go\\setup.py",
+    "Hash": "8B94F6BAA50CA9CB667A8A1DCDE6C277846EE2AC458528A6B0CE4EC3CD6A9D3B"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\mcts\\config.py",
+    "Hash": "95F219FFD024184091C340DFF088ED3CA55D150827A9ABFE4AEE55C9ED162461"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\mcts\\heuristic_mcts.py",
+    "Hash": "32EC01A62722FD0F218E6C6FEF0841609160FB8302687FE5AF9D0AF5738FB9CA"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\mcts\\node.py",
+    "Hash": "6653F4831784643D1954076C29F8DE6CF63FB8F8B864EDD5634B085E759E8C73"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\mcts\\uct_mcts.py",
+    "Hash": "DC0C38489153DE28A08DE5CBEC930EFDE766E41C54AB2F720A2EE5213934B888"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\other_algo\\alpha_beta_search.py",
+    "Hash": "0E6041155AC655774058B9910BCA2002DC4034135097F149F3D74B260B1852EE"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\other_algo\\heuristic.py",
+    "Hash": "7D2675CA2B671E30E781966C143BD030B7208757EF6881E966CF16C90D38BC5A"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\players\\__init__.py",
+    "Hash": "5A2CB97A6500AC529C6327F31C43D63DE7951174E8D9868C611F8D5D3F9787B5"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\players\\alpha_beta_player.py",
+    "Hash": "178392C659A5D8D3119988A73B07359A3189123944CC6B3EA1071C64551A03F2"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\players\\base_player.py",
+    "Hash": "6736721D4571B32BEBECCAB9CB31F5030B2C81F97834A9615B54C643B36D5473"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\players\\heuristic_uct_player.py",
+    "Hash": "128BF0ADEAC49CD75019AEBD7FAB1502B492E1C7CA96BE9F39D3D1D49C3C0ED9"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\players\\human_player.py",
+    "Hash": "9F57F52B8D4AA772DAA8E44B97B97AD766827F6BDF5B55DE4AFB5F6C1C3E8D0F"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\players\\random_player.py",
+    "Hash": "C563ED978891C7FFB27A5DD5DE295AC37106E915F87018278AA71E71DD0BF267"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\players\\uct_player.py",
+    "Hash": "17A603BDDF60FF14FB758FF0968BF4E9BC92BF227B63322A7EE88918AB9BF378"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\mcts\\test_examples\\test_go_board.py",
+    "Hash": "96D74636BA136D2C7D845644F725E60CD9F6219D60BB83C1938C89F88BCFA8A2"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\sudoku\\__init__.py",
+    "Hash": "89F40B0620D2B925D9713B509670D10C15E89F0D56DBF662D2727AD556EFE842"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\sudoku\\backtracking.py",
+    "Hash": "CA9714D33DE09F579E6718BAECDB6B37FD550AAD773EFC4758E85844662A97F6"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\sudoku\\common.py",
+    "Hash": "B6D937B6E4D14D73DF5F83CC172AC4E794AEA2D24BB8F537C548CD257FBF7E93"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\sudoku\\local_search.py",
+    "Hash": "F5AF3ED3DF070A3530358C5A9167FB9A82EB24649EBD6981FE4F0F5FC6414AD9"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\sudoku\\README.md",
+    "Hash": "5E2132FE1DE7DACFF1B0A0311A0A13759227FC6ED9A4660ECDF9D754BADE760F"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\sudoku\\test_sudoku.py",
+    "Hash": "3ACFB227ECFDC306DC5F71C7C262A56BE882314A46C56DDCD76A3A811FDD2383"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\sudoku\\test_visualizer_model.py",
+    "Hash": "8B2DB29DEEC3F0E6141F2249052E376069AC69FE3B782F9A31BE8E3DA1EA4CB1"
+  },
+  {
+    "Path": "D:\\Users\\23329\\Desktop\\综合\\学习\\清华大学\\大三上\\AI2026_Fall_HW1_1\\code\\sudoku\\visualizer.py",
+    "Hash": "515555F0B006F35629769699FFDE2AC6C64916C3DE82855C157882062D147E81"
+  }
+]

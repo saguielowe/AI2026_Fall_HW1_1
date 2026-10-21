@@ -1,0 +1,68 @@
+{
+  "baseline": {
+    "successes": 1000,
+    "proposals": {
+      "mean": 6.221,
+      "median": 5.0,
+      "p95": 13,
+      "maximum": 32
+    },
+    "accepted_swaps": {
+      "mean": 6.221,
+      "median": 5.0,
+      "p95": 13,
+      "maximum": 32
+    },
+    "evaluations": {
+      "mean": 25.884,
+      "median": 21.0,
+      "p95": 53,
+      "maximum": 129
+    },
+    "milliseconds": {
+      "mean": 0.38985780032817274,
+      "median": 0.33374998020008206,
+      "p95": 0.7850000401958823,
+      "maximum": 1.8751999596133828
+    },
+    "restarted_runs": 0
+  },
+  "annealing": {
+    "successes": 1000,
+    "proposals": {
+      "mean": 114.372,
+      "median": 103.0,
+      "p95": 263,
+      "maximum": 516
+    },
+    "accepted_swaps": {
+      "mean": 64.117,
+      "median": 60.0,
+      "p95": 133,
+      "maximum": 188
+    },
+    "evaluations": {
+      "mean": 115.372,
+      "median": 104.0,
+      "p95": 264,
+      "maximum": 517
+    },
+    "milliseconds": {
+      "mean": 1.412704499438405,
+      "median": 1.2678999919444323,
+      "p95": 3.2050999579951167,
+      "maximum": 6.383599946275353
+    },
+    "restarted_runs": 0
+  },
+  "backtracking": {
+    "solutions": 288,
+    "repeats": 30,
+    "median_ms": 8.260499977041036
+  },
+  "mrv": {
+    "solutions": 288,
+    "repeats": 30,
+    "median_ms": 15.212500002235174
+  }
+}

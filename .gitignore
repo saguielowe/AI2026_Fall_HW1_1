@@ -1,0 +1,10 @@
+*.aux
+*.fls
+*.log
+*.out
+*.pyc
+*.pxd
+*.pyx
+*.DS_Store
+*.fdb_latexmk
+*.synctex.gz
